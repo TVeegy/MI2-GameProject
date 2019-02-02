@@ -1,0 +1,48 @@
+/*
+NOTE: width: 100% inspects the containing element, has to be explicitly defined!
+NOTE: min-height helps out with scrollbar issues, calc takes magins out of equation
+*/
+
+html{
+    height: 100vh;
+    
+    margin: 0px;
+    padding: 0px;
+    
+    background-color: aqua;
+}
+
+body{
+    min-height: calc(100vh - 0px);
+    min-width: 100vh;
+    
+    margin: 0px;
+    padding: 0px;
+    
+    background-color: red;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#gameContainer {
+    background-color: greenyellow;
+    border: solid black 10px;
+    border-radius: 10px;
+    
+    box-sizing: content-box;
+    overflow: hidden;
+}
+
+#player {
+    width: 20px;
+    height: 20px;
+    
+    background-color: red;
+    border: solid red 5px;
+    border-radius: 20px;
+    
+    position: relative;
+    box-sizing: border-box;
+}
