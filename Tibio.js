@@ -1,12 +1,19 @@
-//"use strict";
-var levelWidth = $(window).height(), levelHeight = $(window).width();
+"use strict";
 
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* SECTIE GLOBALE VARIABELEN *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
+
+/* ----------------------------------- *//* Element variabelen *//* ----------------------------------- */
 var player = document.getElementById("player");
 var container = document.getElementById("gameContainer");
 
-var playerWidth = 20;
-var moveScale = 10;
 
+/* ----------------------------------- *//* Element property variabelen *//* ----------------------------------- */
+var playerWidth = $("#player").outerWidth();
+
+// Expressies om met een dynamische container te werken ivm resizing
 var getGameContainerWidth = function(){
     var output =  $("#gameContainer").width();
     return output;
@@ -17,28 +24,21 @@ var getGameContainerHeight = function(){
 }
 
 
+/* ----------------------------------- *//* Invullen element property variabelen *//* ----------------------------------- */
+// Mario's afmetingen zijn dynamisch, javascript leest ook enkel inline-CSS en geen CSS stijlbladen.
 player.style.left = "0px";
 player.style.right = `${$("#player").width()}px`;
 player.style.top = "0px";
 player.style.bottom = `${$("#player").height()}px`;
 
 
-/*
-function moveDiagonal() {
-  var pos = 0;
-  var id = setInterval(frame, 5);
-  function frame() {
-    if (pos == 350) {
-      clearInterval(id);
-    } 
-    else {
-      pos++; 
-      player.style.top = pos + 'px'; 
-      player.style.left = pos + 'px'; 
-    }
-  }
-}*/
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* SECTIE BEWEGENINGSMECHANISME *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
+
+/* ----------------------------------- *//* Helperfuncties *//* ----------------------------------- */
+// De container's afmetingen afronden zodat snel bewegende objecten per 10 pixels kunnen bewegen. (zo geen overflow aan randen)
 roundgameContainerSize();
 function roundgameContainerSize(){
     var oldWidth = getGameContainerWidth();
@@ -48,10 +48,21 @@ function roundgameContainerSize(){
     container.style.height = Math.round((oldHeight/10))*10 + "px";
 }
 
+// Helperfunctie die de CPU-intensieve jquery vervangt.
+function convertPropertyToInt(property){
+    return parseInt(property.replace('px', ''), 10);
+}
+
+
+/* ----------------------------------- *//* EventListening *//* ----------------------------------- */
+
+// Twee variabelen om een toets loslaten en een ingedrukte toets duidelijk te maken.
 var keyUp = false;
 var keyDownLoop = false;
 
+// Twee eventlisteners die a.d.h.v. de keycode met functies en variabelen de speler bewegen.
 document.addEventListener('keydown', function(e) {
+    // keyDownLoop == zorgen dat enkel bij het eerste event de loop gestart word. Anders start een loop per keydown event.
     if (keyUp == false && keyDownLoop == false){
         if (e.keyCode == '38'){
             Move("up"); console.log("keydown up");
@@ -71,7 +82,7 @@ document.addEventListener('keydown', function(e) {
 })
 
 window.addEventListener("keyup", function(e){
-    console.log("BEEP");
+    // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
     if (e.keyCode == '38'){
         keyUp = true; console.log("keyup up");
     }
@@ -89,42 +100,46 @@ window.addEventListener("keyup", function(e){
   })
 
 
+/* ----------------------------------- *//* Bewegen *//* ----------------------------------- */
 
+// Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
 function Move(direction) {
-    keyDownLoop == true;
+    keyDownLoop = true;
     
-    do{
-        movePlayer(direction);
-    }
-    while (keyUp == false);
-    
-    keyUp = false;
-    keyDownLoop = false;
-    
-    /*var id = setInterval(frame, 5);
+    var id = setInterval(frame, 2);
     function frame() {
         if (keyUp == true) {
             keyUp = false;
             keyDownLoop = false;
+            
             clearInterval(id);
         } 
         else {
             movePlayer(direction);
         }
-  }*/
+  }
 }
 
-function convertPropertyToInt(property){
-    var numbers = property.replace('px', '');
-    var numbersToInt = parseInt(numbers, 10);
-    return numbersToInt;
-}
+// Huidig bewegingssysteem is blind voor overlappende pijltjestoetsen.
+/*
+function moveDiagonal() {
+  var id = setInterval(frame, 5);
+  function frame() {
+    if () {
+      clearInterval(id);
+    } 
+    else {
+      
+    }
+  }
+}*/
+
+// Functie die der kern v.h. bewegingsmechanisme is, top en bottom veranderen evenredig.
 function movePlayer(direction){
     switch(direction){
         case "up":
             if (convertPropertyToInt(player.style.top) > 0){
-               var topNumbers = player.style.top.replace('px', '');
-                var top = parseInt(topNumbers, 10);
+                var top = convertPropertyToInt(player.style.top);
                 player.style.top = `${top - 1}px`;
                 player.style.bottom = `${top - 1 + playerWidth}px`;
             }
@@ -132,9 +147,8 @@ function movePlayer(direction){
             
         case "down":
             var gamecontainerHeight = getGameContainerHeight();
-        if (convertPropertyToInt(player.style.bottom) < gamecontainerHeight){
-                var topNumbers = player.style.top.replace('px', '');
-                var top = parseInt(topNumbers, 10);
+            if (convertPropertyToInt(player.style.bottom) < gamecontainerHeight){
+                var top = convertPropertyToInt(player.style.top);
                 player.style.top = `${top + 1}px`;
                 player.style.bottom = `${top + 1 + playerWidth}px`;
             }
@@ -142,8 +156,7 @@ function movePlayer(direction){
             
         case "left":
             if (convertPropertyToInt(player.style.left) > 0){
-                var leftNumbers = player.style.left.replace('px', '');
-                var left = parseInt(leftNumbers, 10);
+                var left = convertPropertyToInt(player.style.left);
                 player.style.left = `${left - 1}px`;
                 player.style.right = `${left - 1 + playerWidth}px`;
             }
@@ -152,8 +165,7 @@ function movePlayer(direction){
         case "right":
             var gameContainerWidth = getGameContainerWidth();
             if (convertPropertyToInt(player.style.right) < gameContainerWidth){
-                var leftNumbers = player.style.left.replace('px', '');
-                var left = parseInt(leftNumbers, 10);
+                var left = convertPropertyToInt(player.style.left);
                 player.style.left = `${left + 1}px`;
                 player.style.right = `${left + 1 + playerWidth}px`;
             }
