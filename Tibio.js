@@ -67,32 +67,44 @@ function convertPropertyToInt(property){
 /* ----------------------------------- *//* EventListening *//* ----------------------------------- */
 
 // Twee variabelen om een losgelaten toets en een ingedrukte toets duidelijk te maken.
-var keyUp = false;
-var keyDownLoop = false;
+let keyUp = false;
+let keyDownLoop = false;
 
+let goingUp = false;
+let goingDown = false;
+let goingLeft = false;
+let goingRight = false;
 // Twee eventlisteners die a.d.h.v. de keycode met functies en variabelen de speler bewegen.
 document.addEventListener('keydown', function(e) {
     // keyDownLoop == zorgen dat enkel bij het eerste event de loop gestart word. Anders start een loop per keydown event.
-    if (keyUp == false && keyDownLoop == false){
-        waitForDiagonal();
+    if (/*keyUp == false &&*/ keyDownLoop == false){
+        //waitForDiagonal();
         if (e.keyCode == '38'){
-            /*Move("up");*/ registerMoves("up"); console.log("keydown up");
+            /*Move("up");*/ //registerMoves("up"); 
+            goingUp = true; Move("up");
+            console.log("keydown up");
         }
         else if (e.keyCode == '40'){
-            /*Move("down");*/ registerMoves("down"); console.log("keydown down");
+            /*Move("down");*/ //registerMoves("down"); 
+            goingDown = true; Move("down");
+            console.log("keydown down");
         }
     
         else if (e.keyCode == '37'){
-            /*Move("left");*/ registerMoves("left"); console.log("keydown left");
+            /*Move("left");*/ //registerMoves("left"); 
+            goingLeft = true; Move("left");
+            console.log("keydown left");
         }
     
         else if (e.keyCode == '39'){
-            /*Move("right");*/ registerMoves("right"); console.log("keydown right");
+            /*Move("right");*/ //registerMoves("right"); 
+            goingRight = true; Move("right");
+            console.log("keydown right");
         }
     }
 })
 
-let busy = false;
+/*let busy = false;
 function waitForDiagonal(){
     if (busy === false){
         console.log("timeout started");
@@ -131,23 +143,35 @@ function registerMoves(direction) {
         console.log(`second move ${direction} registered!`);
         registeredMoves[1] = direction;
     }
-}
+}*/
 
+let cancelUp = false;
+let cancelDown = false;
+let cancelLeft = false;
+let cancelRight = false;
 window.addEventListener("keyup", function(e){
     // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
     if (e.keyCode == '38'){
-        keyUp = true; console.log("keyup up");
+        keyUp = true; 
+        cancelUp = true;
+        console.log("keyup up");
     }
     else if (e.keyCode == '40'){
-        keyUp = true; console.log("keyup down");
+        keyUp = true; 
+        cancelDown = true;
+        console.log("keyup down");
     }
     
     else if (e.keyCode == '37'){
-        keyUp = true; console.log("keyup left");
+        keyUp = true; 
+        cancelLeft = true;
+        console.log("keyup left");
     }
     
     else if (e.keyCode == '39'){
-        keyUp = true; console.log("keyup right");
+        keyUp = true; 
+        cancelRight = true;
+        console.log("keyup right");
     }
   })
 
@@ -161,32 +185,57 @@ function Move(direction) {
     keyDownLoop = true;
 
     function executeMove() {
-        if (keyUp == true) {
-            keyUp = false;
-            keyDownLoop = false;
-        } 
-        else {
-            movePlayer(direction);
-            requestAnimationFrame(executeMove);
+        
+        switch(direction){
+            case "up":
+                if (cancelUp == true) {
+                    cancelUp = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "down":
+                if (cancelDown == true) {
+                    cancelDown = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "left":
+                if (cancelLeft == true) {
+                    cancelLeft = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "right":
+                if (cancelRight == true) {
+                    cancelRight = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
         }
     };
     requestAnimationFrame(executeMove);
-
-    /*var id = setInterval(frame, 2);
-    function frame() {
-        if (keyUp == true) {
-            keyUp = false;
-            keyDownLoop = false;
-            
-            clearInterval(id);
-        } 
-        else {
-            movePlayer(direction);
-        }
-  }*/
 }
 
-function moveDiagonal(firstDirection, secondDirection) {
+/*function moveDiagonal(firstDirection, secondDirection) {
     keyDownLoop = true;
 
     function executeMove() {
@@ -201,7 +250,7 @@ function moveDiagonal(firstDirection, secondDirection) {
         }
     };
     requestAnimationFrame(executeMove);
-}
+}*/
 
 // Functie die der kern v.h. bewegingsmechanisme is, top en bottom veranderen evenredig.
 function movePlayer(direction, elem=null){
