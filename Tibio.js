@@ -6,30 +6,40 @@
 
 
 /* ----------------------------------- *//* Element variabelen *//* ----------------------------------- */
-var player = document.getElementById("player");
-var container = document.getElementById("gameContainer");
+var elemPlayer = document.getElementById("player");
+var elemContainer = document.getElementById("gameContainer");
 
 
 /* ----------------------------------- *//* Element property variabelen *//* ----------------------------------- */
 var playerWidth = $("#player").outerWidth();
+var playerHeight = $("#player").outerHeight();
 
-// Expressies om met een dynamische container te werken ivm resizing
+// Expressies om met een dynamische container te werken ivm resizing tijdens het spelen v.h. spel.
 var getGameContainerWidth = function(){
-    var output =  $("#gameContainer").width();
-    return output;
+    return $("#gameContainer").width();
 }
 var getGameContainerHeight = function(){
-    var output = $("#gameContainer").height();
-    return output;
+    return $("#gameContainer").height();
 }
 
 
 /* ----------------------------------- *//* Invullen element property variabelen *//* ----------------------------------- */
 // Mario's afmetingen zijn dynamisch, javascript leest ook enkel inline-CSS en geen CSS stijlbladen.
-player.style.left = "0px";
-player.style.right = `${$("#player").width()}px`;
-player.style.top = "0px";
-player.style.bottom = `${$("#player").height()}px`;
+resetPlayerPosition();
+function resetPlayerPosition(){
+    let playerStyleRef = elemPlayer.style;
+
+    // Uitbreiding
+    let startPosition = 0;
+    let currentPlayerWidth = playerWidth;
+    let currentPlayerHeight = playerHeight;
+
+    // De speler zijn positie configureren
+    playerStyleRef.left = `${startPosition}px`;
+    playerStyleRef.right = `${currentPlayerWidth}px`;
+    playerStyleRef.top = `${startPosition}px`;
+    playerStyleRef.bottom = `${currentPlayerHeight}px`;
+}
 
 
 /* --------------------------------------------------------------------------------------------------------- */
@@ -38,17 +48,17 @@ player.style.bottom = `${$("#player").height()}px`;
 
 
 /* ----------------------------------- *//* Helperfuncties *//* ----------------------------------- */
-// De container's afmetingen afronden zodat snel bewegende objecten per 10 pixels kunnen bewegen. (zo geen overflow aan randen)
+// De container's afmetingen afronden zodat bewegende objecten per 10 pixels kunnen bewegen. (zo geen overflow aan randen)
 roundgameContainerSize();
 function roundgameContainerSize(){
-    var oldWidth = getGameContainerWidth();
-    var oldHeight = getGameContainerHeight();
+    let oldWidth = getGameContainerWidth();
+    let oldHeight = getGameContainerHeight();
     
-    container.style.width = Math.round((oldWidth/10))*10 + "px";
-    container.style.height = Math.round((oldHeight/10))*10 + "px";
+    elemContainer.style.width = Math.round((oldWidth/10))*10 + "px";
+    elemContainer.style.height = Math.round((oldHeight/10))*10 + "px";
 }
 
-// Helperfunctie die de CPU-intensieve jquery vervangt.
+// Helperfunctie die een property omzet naar een bruikbaar getal.
 function convertPropertyToInt(property){
     return parseInt(property.replace('px', ''), 10);
 }
@@ -56,7 +66,7 @@ function convertPropertyToInt(property){
 
 /* ----------------------------------- *//* EventListening *//* ----------------------------------- */
 
-// Twee variabelen om een toets loslaten en een ingedrukte toets duidelijk te maken.
+// Twee variabelen om een losgelaten toets en een ingedrukte toets duidelijk te maken.
 var keyUp = false;
 var keyDownLoop = false;
 
@@ -64,22 +74,64 @@ var keyDownLoop = false;
 document.addEventListener('keydown', function(e) {
     // keyDownLoop == zorgen dat enkel bij het eerste event de loop gestart word. Anders start een loop per keydown event.
     if (keyUp == false && keyDownLoop == false){
+        waitForDiagonal();
         if (e.keyCode == '38'){
-            Move("up"); console.log("keydown up");
+            /*Move("up");*/ registerMoves("up"); console.log("keydown up");
         }
         else if (e.keyCode == '40'){
-            Move("down"); console.log("keydown down");
+            /*Move("down");*/ registerMoves("down"); console.log("keydown down");
         }
     
         else if (e.keyCode == '37'){
-            Move("left"); console.log("keydown left");
+            /*Move("left");*/ registerMoves("left"); console.log("keydown left");
         }
     
         else if (e.keyCode == '39'){
-            Move("right"); console.log("keydown right");
+            /*Move("right");*/ registerMoves("right"); console.log("keydown right");
         }
     }
 })
+
+let busy = false;
+function waitForDiagonal(){
+    if (busy === false){
+        console.log("timeout started");
+        busy = true;
+
+        setTimeout(function(){ 
+            console.log("timeout ended");
+            console.log(`first move: ${registeredMoves[0]}`);
+            console.log(`second move: ${registeredMoves[1]}`);
+            busy = false;
+
+            if (registeredMoves[0] != "" && registeredMoves[1] != ""){
+                console.log(`moving with arg: ${registeredMoves[0]} and ${registeredMoves[1]}`);
+                moveDiagonal(registeredMoves[0], registeredMoves[1]);
+                console.log("moved diagonal!");
+            }
+            else{
+                console.log(`moving with arg: ${registeredMoves[0]}`);
+                Move(registeredMoves[0]);
+                console.log("moved axial!");
+            }
+            registeredMoves = ["",""];
+        }, 100);
+    }
+}
+
+let registeredMoves = ["",""];
+function registerMoves(direction) {
+    console.log(`attempting registration for move ${direction}...`);
+    if (registeredMoves[0] === ""){
+        console.log(`first move ${direction} registered!`);
+        registeredMoves[0] = direction;
+    }
+        
+    else if (registeredMoves[0] != direction && registeredMoves[1] === ""){
+        console.log(`second move ${direction} registered!`);
+        registeredMoves[1] = direction;
+    }
+}
 
 window.addEventListener("keyup", function(e){
     // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
@@ -104,9 +156,23 @@ window.addEventListener("keyup", function(e){
 
 // Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
 function Move(direction) {
+    console.log("");
+    console.log("start move");
     keyDownLoop = true;
-    
-    var id = setInterval(frame, 2);
+
+    function executeMove() {
+        if (keyUp == true) {
+            keyUp = false;
+            keyDownLoop = false;
+        } 
+        else {
+            movePlayer(direction);
+            requestAnimationFrame(executeMove);
+        }
+    };
+    requestAnimationFrame(executeMove);
+
+    /*var id = setInterval(frame, 2);
     function frame() {
         if (keyUp == true) {
             keyUp = false;
@@ -117,57 +183,62 @@ function Move(direction) {
         else {
             movePlayer(direction);
         }
-  }
+  }*/
 }
 
-// Huidig bewegingssysteem is blind voor overlappende pijltjestoetsen.
-/*
-function moveDiagonal() {
-  var id = setInterval(frame, 5);
-  function frame() {
-    if () {
-      clearInterval(id);
-    } 
-    else {
-      
-    }
-  }
-}*/
+function moveDiagonal(firstDirection, secondDirection) {
+    keyDownLoop = true;
+
+    function executeMove() {
+        if (keyUp == true) {
+            keyUp = false;
+            keyDownLoop = false;
+        } 
+        else {
+            movePlayer(firstDirection);
+            movePlayer(secondDirection);
+            requestAnimationFrame(executeMove);
+        }
+    };
+    requestAnimationFrame(executeMove);
+}
 
 // Functie die der kern v.h. bewegingsmechanisme is, top en bottom veranderen evenredig.
-function movePlayer(direction){
+function movePlayer(direction, elem=null){
+    let playerStyleRef;
+    elem === null ? playerStyleRef = elemPlayer.style : playerStyleRef = elem.style;;
+    let top = convertPropertyToInt(playerStyleRef.top);
+    let left = convertPropertyToInt(playerStyleRef.left);
+    let pixelPerMove = 5;
+
     switch(direction){
         case "up":
-            if (convertPropertyToInt(player.style.top) > 0){
-                var top = convertPropertyToInt(player.style.top);
-                player.style.top = `${top - 1}px`;
-                player.style.bottom = `${top - 1 + playerWidth}px`;
+            if (top > 0){
+                playerStyleRef.top = `${top - pixelPerMove}px`;
+                playerStyleRef.bottom = `${top - pixelPerMove + playerHeight}px`;
             }
             break;
             
         case "down":
-            var gamecontainerHeight = getGameContainerHeight();
-            if (convertPropertyToInt(player.style.bottom) < gamecontainerHeight){
-                var top = convertPropertyToInt(player.style.top);
-                player.style.top = `${top + 1}px`;
-                player.style.bottom = `${top + 1 + playerWidth}px`;
+            let gamecontainerHeight = getGameContainerHeight();
+            if (convertPropertyToInt(playerStyleRef.bottom) < gamecontainerHeight){
+                playerStyleRef.top = `${top + pixelPerMove}px`;
+                playerStyleRef.bottom = `${top + pixelPerMove + playerHeight}px`;
             }
             break;
             
         case "left":
-            if (convertPropertyToInt(player.style.left) > 0){
-                var left = convertPropertyToInt(player.style.left);
-                player.style.left = `${left - 1}px`;
-                player.style.right = `${left - 1 + playerWidth}px`;
+            if (convertPropertyToInt(playerStyleRef.left) > 0){
+                playerStyleRef.left = `${left - pixelPerMove}px`;
+                playerStyleRef.right = `${left - pixelPerMove + playerWidth}px`;
             }
             break;
             
         case "right":
-            var gameContainerWidth = getGameContainerWidth();
-            if (convertPropertyToInt(player.style.right) < gameContainerWidth){
-                var left = convertPropertyToInt(player.style.left);
-                player.style.left = `${left + 1}px`;
-                player.style.right = `${left + 1 + playerWidth}px`;
+            let gameContainerWidth = getGameContainerWidth();
+            if (convertPropertyToInt(playerStyleRef.right) < gameContainerWidth){
+                playerStyleRef.left = `${left + pixelPerMove}px`;
+                playerStyleRef.right = `${left + pixelPerMove + playerWidth}px`;
             }
             break;
     }
