@@ -86,7 +86,7 @@ document.addEventListener('keydown', function(e) {
         }
         else if (e.keyCode == '40'){
             /*Move("down");*/ //registerMoves("down"); 
-            goingDown = true; Move("down");
+            goingDown = true; MoveDown("down");
             console.log("keydown down");
         }
     
@@ -104,6 +104,7 @@ document.addEventListener('keydown', function(e) {
     }
 })
 
+{ // Old code 
 /*let busy = false;
 function waitForDiagonal(){
     if (busy === false){
@@ -144,11 +145,12 @@ function registerMoves(direction) {
         registeredMoves[1] = direction;
     }
 }*/
+}
 
-let cancelUp = false;
+/*let cancelUp = false;
 let cancelDown = false;
 let cancelLeft = false;
-let cancelRight = false;
+let cancelRight = false;*/
 window.addEventListener("keyup", function(e){
     // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
     if (e.keyCode == '38'){
@@ -180,6 +182,62 @@ window.addEventListener("keyup", function(e){
 
 // Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
 function Move(direction) {
+    console.log("");
+    console.log("start move");
+    keyDownLoop = true;
+
+    function executeMove() {
+        
+        switch(direction){
+            case "up":
+                if (cancelUp == true) {
+                    cancelUp = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "down":
+                if (cancelDown == true) {
+                    cancelDown = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "left":
+                if (cancelLeft == true) {
+                    cancelLeft = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+                
+            case "right":
+                if (cancelRight == true) {
+                    cancelRight = false;
+                    keyDownLoop = false;
+                } 
+                else {
+                    movePlayer(direction);
+                    requestAnimationFrame(executeMove);
+                }
+                break;
+        }
+    };
+    requestAnimationFrame(executeMove);
+}
+
+function MoveDown(direction) {
     console.log("");
     console.log("start move");
     keyDownLoop = true;
