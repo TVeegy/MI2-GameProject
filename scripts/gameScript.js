@@ -81,25 +81,25 @@ document.addEventListener('keydown', function(e) {
         //waitForDiagonal();
         if (e.keyCode == '38'){
             /*Move("up");*/ //registerMoves("up"); 
-            goingUp = true; Move("up");
-            console.log("keydown up");
+            //goingUp = true; Move("up");
+            //console.log("keydown up");
         }
         else if (e.keyCode == '40'){
             /*Move("down");*/ //registerMoves("down"); 
-            goingDown = true; MoveDown("down");
-            console.log("keydown down");
+            //goingDown = true; Move("down");
+            //console.log("keydown down");
         }
     
         else if (e.keyCode == '37'){
             /*Move("left");*/ //registerMoves("left"); 
-            goingLeft = true; Move("left");
-            console.log("keydown left");
+            //goingLeft = true; Move("left");
+            //console.log("keydown left");
         }
     
         else if (e.keyCode == '39'){
             /*Move("right");*/ //registerMoves("right"); 
-            goingRight = true; Move("right");
-            console.log("keydown right");
+            //goingRight = true; Move("right");
+            //console.log("keydown right");
         }
     }
 })
@@ -147,148 +147,113 @@ function registerMoves(direction) {
 }*/
 }
 
-/*let cancelUp = false;
+let cancelUp = false;
 let cancelDown = false;
 let cancelLeft = false;
-let cancelRight = false;*/
+let cancelRight = false;
 window.addEventListener("keyup", function(e){
     // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
     if (e.keyCode == '38'){
         keyUp = true; 
         cancelUp = true;
-        console.log("keyup up");
+        //console.log("keyup up");
     }
     else if (e.keyCode == '40'){
         keyUp = true; 
         cancelDown = true;
-        console.log("keyup down");
+        //console.log("keyup down");
     }
     
     else if (e.keyCode == '37'){
         keyUp = true; 
         cancelLeft = true;
-        console.log("keyup left");
+        //console.log("keyup left");
     }
     
     else if (e.keyCode == '39'){
         keyUp = true; 
         cancelRight = true;
-        console.log("keyup right");
+        //console.log("keyup right");
     }
   })
 
 
 /* ----------------------------------- *//* Bewegen *//* ----------------------------------- */
 
-// Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
-function Move(direction) {
-    console.log("");
-    console.log("start move");
-    keyDownLoop = true;
+let map = {37:false, 38:false, 39:false, 40:false};
+let keys = {left:'37', up:'38', right:'39', down:'40'}; 
+onkeydown = onkeyup = function(e){
+    e = e || event; // to deal with IE
 
-    function executeMove() {
-        
-        switch(direction){
-            case "up":
-                if (cancelUp == true) {
-                    cancelUp = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
-                    requestAnimationFrame(executeMove);
-                }
+    for (let i = 0, len = Object.keys(map).length; i < len; i++) {
+        console.log('test');
+      }
+
+    if (Object.values(keys).indexOf(e.keyCode.toString()) > -1) 
+    {
+        map[e.keyCode] = e.type == 'keydown';
+        switch(e.keyCode){
+            case '37':
+                if (map[37]) Move('left');
                 break;
-                
-            case "down":
-                if (cancelDown == true) {
-                    cancelDown = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
-                    requestAnimationFrame(executeMove);
-                }
+
+            case '39':
+                if (map[39]) Move('right');    
                 break;
-                
-            case "left":
-                if (cancelLeft == true) {
-                    cancelLeft = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
-                    requestAnimationFrame(executeMove);
-                }
+
+            case '38':
+                if (map[38]) Move('up');    
                 break;
-                
-            case "right":
-                if (cancelRight == true) {
-                    cancelRight = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
-                    requestAnimationFrame(executeMove);
-                }
+
+            case '40':
+                if (map[40]) Move('down');
                 break;
         }
-    };
-    requestAnimationFrame(executeMove);
+    }
 }
 
-function MoveDown(direction) {
-    console.log("");
-    console.log("start move");
+// Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
+function Move(direction) {
     keyDownLoop = true;
-
     function executeMove() {
         
-        switch(direction){
-            case "up":
-                if (cancelUp == true) {
-                    cancelUp = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
+        for (let i = 0, len = Object.keys(map).length; i < len; i++) {
+            console.log('test ' + i);
+          }
+        
+        /*switch(e.keyCode){
+            case '37':
+                if (map[37])
+                {
+                    movePlayer('left');
                     requestAnimationFrame(executeMove);
-                }
+                };
                 break;
-                
-            case "down":
-                if (cancelDown == true) {
-                    cancelDown = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
+
+            case '39':
+                if (map[39])
+                {
+                    movePlayer('right');
                     requestAnimationFrame(executeMove);
-                }
+                };  
                 break;
-                
-            case "left":
-                if (cancelLeft == true) {
-                    cancelLeft = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
+
+            case '38':
+                if (map[38])
+                {
+                    movePlayer('up');
                     requestAnimationFrame(executeMove);
-                }
+                };
                 break;
-                
-            case "right":
-                if (cancelRight == true) {
-                    cancelRight = false;
-                    keyDownLoop = false;
-                } 
-                else {
-                    movePlayer(direction);
+
+            case '40':
+                if (map[40])
+                {
+                    movePlayer('down');
                     requestAnimationFrame(executeMove);
-                }
+                };
                 break;
-        }
+        }*/
     };
     requestAnimationFrame(executeMove);
 }
