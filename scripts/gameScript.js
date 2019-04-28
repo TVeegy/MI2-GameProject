@@ -1,16 +1,22 @@
 "use strict";
 
 /* --------------------------------------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* SECTIE GLOBALE VARIABELEN *//* ----------------------------------- */
 /* --------------------------------------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* Element variabelen *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 var elemPlayer = document.getElementById("player");
 var elemContainer = document.getElementById("gameContainer");
 
 
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* Element property variabelen *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
 var playerWidth = $("#player").outerWidth();
 var playerHeight = $("#player").outerHeight();
 
@@ -22,8 +28,10 @@ var getGameContainerHeight = function(){
     return $("#gameContainer").height();
 }
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* Invullen element property variabelen *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
 // Mario's afmetingen zijn dynamisch, javascript leest ook enkel inline-CSS en geen CSS stijlbladen.
 resetPlayerPosition();
 function resetPlayerPosition(){
@@ -41,13 +49,16 @@ function resetPlayerPosition(){
     playerStyleRef.bottom = `${currentPlayerHeight}px`;
 }
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* SECTIE BEWEGENINGSMECHANISME *//* ----------------------------------- */
 /* --------------------------------------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* Helperfuncties *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
 // De container's afmetingen afronden zodat bewegende objecten per 10 pixels kunnen bewegen. (zo geen overflow aan randen)
 roundgameContainerSize();
 function roundgameContainerSize(){
@@ -63,254 +74,222 @@ function convertPropertyToInt(property){
     return parseInt(property.replace('px', ''), 10);
 }
 
-
+/* --------------------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* EventListening *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
-// Twee variabelen om een losgelaten toets en een ingedrukte toets duidelijk te maken.
-let keyUp = false;
-let keyDownLoop = false;
+// A memory of used arrow-keycodes to react upon within this program (arrowKeys) and a map of each arrow-keycode's current state (arrowKeyStateMap)
+let arrowKeys = {left:'37', up:'38', right:'39', down:'40'};
+let arrowKeyStateMap = {37:false, 38:false, 39:false, 40:false};
 
-let goingUp = false;
-let goingDown = false;
-let goingLeft = false;
-let goingRight = false;
-// Twee eventlisteners die a.d.h.v. de keycode met functies en variabelen de speler bewegen.
-document.addEventListener('keydown', function(e) {
-    // keyDownLoop == zorgen dat enkel bij het eerste event de loop gestart word. Anders start een loop per keydown event.
-    if (/*keyUp == false &&*/ keyDownLoop == false){
-        //waitForDiagonal();
-        if (e.keyCode == '38'){
-            /*Move("up");*/ //registerMoves("up"); 
-            //goingUp = true; Move("up");
-            //console.log("keydown up");
-        }
-        else if (e.keyCode == '40'){
-            /*Move("down");*/ //registerMoves("down"); 
-            //goingDown = true; Move("down");
-            //console.log("keydown down");
-        }
-    
-        else if (e.keyCode == '37'){
-            /*Move("left");*/ //registerMoves("left"); 
-            //goingLeft = true; Move("left");
-            //console.log("keydown left");
-        }
-    
-        else if (e.keyCode == '39'){
-            /*Move("right");*/ //registerMoves("right"); 
-            //goingRight = true; Move("right");
-            //console.log("keydown right");
-        }
-    }
-})
+// Two references to handler methods for the keydown and keyup events
+onkeyup = HandleKeyUp;
+onkeydown = HandleKeyDown;
 
-{ // Old code 
-/*let busy = false;
-function waitForDiagonal(){
-    if (busy === false){
-        console.log("timeout started");
-        busy = true;
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* EventHandling *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
-        setTimeout(function(){ 
-            console.log("timeout ended");
-            console.log(`first move: ${registeredMoves[0]}`);
-            console.log(`second move: ${registeredMoves[1]}`);
-            busy = false;
+function HandleKeyDown(e) {
+    e = e || event; // Dealing with IE
 
-            if (registeredMoves[0] != "" && registeredMoves[1] != ""){
-                console.log(`moving with arg: ${registeredMoves[0]} and ${registeredMoves[1]}`);
-                moveDiagonal(registeredMoves[0], registeredMoves[1]);
-                console.log("moved diagonal!");
-            }
-            else{
-                console.log(`moving with arg: ${registeredMoves[0]}`);
-                Move(registeredMoves[0]);
-                console.log("moved axial!");
-            }
-            registeredMoves = ["",""];
-        }, 100);
-    }
-}
-
-let registeredMoves = ["",""];
-function registerMoves(direction) {
-    console.log(`attempting registration for move ${direction}...`);
-    if (registeredMoves[0] === ""){
-        console.log(`first move ${direction} registered!`);
-        registeredMoves[0] = direction;
-    }
-        
-    else if (registeredMoves[0] != direction && registeredMoves[1] === ""){
-        console.log(`second move ${direction} registered!`);
-        registeredMoves[1] = direction;
-    }
-}*/
-}
-
-let cancelUp = false;
-let cancelDown = false;
-let cancelLeft = false;
-let cancelRight = false;
-window.addEventListener("keyup", function(e){
-    // keyUp == zorgen dat de loop onderbroken wordt wanneer iemand de pijltjestoets loslaat.
-    if (e.keyCode == '38'){
-        keyUp = true; 
-        cancelUp = true;
-        //console.log("keyup up");
-    }
-    else if (e.keyCode == '40'){
-        keyUp = true; 
-        cancelDown = true;
-        //console.log("keyup down");
-    }
-    
-    else if (e.keyCode == '37'){
-        keyUp = true; 
-        cancelLeft = true;
-        //console.log("keyup left");
-    }
-    
-    else if (e.keyCode == '39'){
-        keyUp = true; 
-        cancelRight = true;
-        //console.log("keyup right");
-    }
-  })
-
-
-/* ----------------------------------- *//* Bewegen *//* ----------------------------------- */
-
-let map = {37:false, 38:false, 39:false, 40:false};
-let keys = {left:'37', up:'38', right:'39', down:'40'}; 
-onkeydown = onkeyup = function(e){
-    e = e || event; // to deal with IE
-
-    for (let i = 0, len = Object.keys(map).length; i < len; i++) {
-        console.log('test');
-      }
-
-    if (Object.values(keys).indexOf(e.keyCode.toString()) > -1) 
+    // Check if the input keycode is an arrow-key of the arrowKeys variable
+    if (Object.values(arrowKeys).indexOf(e.keyCode.toString()) > -1) 
     {
-        map[e.keyCode] = e.type == 'keydown';
-        switch(e.keyCode){
+        // Map the state of an arrow-key event. ( -> true)
+        arrowKeyStateMap[e.keyCode] = true;
+        
+        // Configure the moveController according to the used key
+        switch(e.keyCode.toString()){
             case '37':
-                if (map[37]) Move('left');
+                moveController.setMoveDirection = 'left';
+                moveController.setMoveSpeed = 1;
                 break;
 
             case '39':
-                if (map[39]) Move('right');    
+                moveController.setMoveDirection = 'right';
+                moveController.setMoveSpeed = 1;
                 break;
 
             case '38':
-                if (map[38]) Move('up');    
+                moveController.setMoveDirection = 'up';
+                moveController.setMoveSpeed = 1;    
                 break;
 
             case '40':
-                if (map[40]) Move('down');
+                moveController.setMoveDirection = 'down';
+                moveController.setMoveSpeed = 1; 
                 break;
         }
     }
 }
 
-// Een interval waarin een beweging uitgevoerd word tot de pijltjestoets losgelaten word. (Daar worden dan ook de gebruikte variabelen gereset)
-function Move(direction) {
-    keyDownLoop = true;
-    function executeMove() {
+function HandleKeyUp(e) {
+    e = e || event; // Dealing with IE
+
+    // Check if the input keycode is an arrow-key of the arrowKeys variable
+    if (Object.values(arrowKeys).indexOf(e.keyCode.toString()) > -1) 
+    {
+        // Map the state of an arrow-key event. ( -> true)
+        arrowKeyStateMap[e.keyCode] = false;
         
-        for (let i = 0, len = Object.keys(map).length; i < len; i++) {
-            console.log('test ' + i);
-          }
-        
-        /*switch(e.keyCode){
+        // Configure the moveController according to the used key
+        switch(e.keyCode.toString()){
             case '37':
-                if (map[37])
-                {
-                    movePlayer('left');
-                    requestAnimationFrame(executeMove);
-                };
+                moveController.setMoveDirection = 'left';
+                moveController.setMoveSpeed = 0;
                 break;
 
             case '39':
-                if (map[39])
-                {
-                    movePlayer('right');
-                    requestAnimationFrame(executeMove);
-                };  
+                moveController.setMoveDirection = 'right';
+                moveController.setMoveSpeed = 0;
                 break;
 
             case '38':
-                if (map[38])
-                {
-                    movePlayer('up');
-                    requestAnimationFrame(executeMove);
-                };
+                moveController.setMoveDirection = 'up';
+                moveController.setMoveSpeed = 0;    
                 break;
 
             case '40':
-                if (map[40])
-                {
-                    movePlayer('down');
-                    requestAnimationFrame(executeMove);
-                };
+                moveController.setMoveDirection = 'down';
+                moveController.setMoveSpeed = 0;    
                 break;
-        }*/
-    };
-    requestAnimationFrame(executeMove);
+        }
+    }
 }
 
-/*function moveDiagonal(firstDirection, secondDirection) {
-    keyDownLoop = true;
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Move Controller *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
 
-    function executeMove() {
-        if (keyUp == true) {
-            keyUp = false;
-            keyDownLoop = false;
-        } 
-        else {
-            movePlayer(firstDirection);
-            movePlayer(secondDirection);
-            requestAnimationFrame(executeMove);
+// The basic variable out of which an object is defined with accompanying getters and setters.
+let moveController = { moveSpeed: 0, direction: '', gravity: 0 };
+
+// A move speed of += 1 will prompt moving, anything below that will stop moving. (this provided there is a configured direction)
+Object.defineProperties(moveController, {
+    'getMoveSpeed': { get: function() { return this.moveSpeed; } },
+    'setMoveSpeed': { set: function(value) { if (value >= 1) StartSequencingMoves(); else StopSequencing(); this.moveSpeed = value;} },
+    'getMoveDirection': { get: function() { return this.moveSpeed; } },
+    'setMoveDirection': { set: function(value) { this.direction = value; this.direction = value;} },
+    'getGravity': { get: function() { return this.gravity; } },
+    'setGravity': { set: function(value) { this.gravity = value; } }
+});
+
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Initiating Movement *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
+// Variables to signal movement and a variable to stop overflow problems caused by a misconfiguration
+let stopMovementFlag = false;
+let failSafeCounter = 0;
+
+// Responsability: Starting and stopping a moving sequence - Protecting/Governing the process
+function StartSequencingMoves() {
+    
+    // Reset the flag before starting a new moving sequence
+    stopMovementFlag = false;
+
+    function ExecuteSequence() 
+    {
+        failSafeCounter++;
+        if (!stopMovementFlag && moveController.direction != '')
+        {
+            ExecuteMoveAnimation(moveController.direction);
+            if (failSafeCounter < 50) 
+                ExecuteSequence();
+            else 
+            {
+                console.log('FAILSAFE ACTIVATED');
+                failSafeCounter = 0;
+            }
+        }
+    }
+    // Execute the above-described moving sequence
+    ExecuteSequence(); 
+}
+
+// A simple function to flag the stopping of a moving sequence
+function StopSequencing() 
+{
+    stopMovementFlag = true;
+}
+
+// Responsability: Starting and stopping the animation of a move - Protecting/Governing the process
+function ExecuteMoveAnimation(direction) {
+
+    // Fires a single frame, based on the direction of the move
+    function fireAnimationFrame() {
+        switch(direction)
+        {
+            case 'left':
+                MovePixelPosition('left');
+                break;
+
+            case 'right':
+                MovePixelPosition('right');
+                break;
+
+            case 'up':
+                MovePixelPosition('up');
+                break;
+
+            case 'down':
+                MovePixelPosition('down');
+                break;
         }
     };
-    requestAnimationFrame(executeMove);
-}*/
+    // Execute the above-described firing function
+    requestAnimationFrame(fireAnimationFrame);
+}
 
-// Functie die der kern v.h. bewegingsmechanisme is, top en bottom veranderen evenredig.
-function movePlayer(direction, elem=null){
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Executing the Movement *//* ----------------------------------- */
+/* --------------------------------------------------------------------------------------------------------- */
+
+// Responsability: Changing the position in pixels of an element in a certain axial direction on the screen
+function MovePixelPosition(direction, elem=null){
+    // A basic container-variable to efficiently store the style reference
     let playerStyleRef;
-    elem === null ? playerStyleRef = elemPlayer.style : playerStyleRef = elem.style;;
-    let top = convertPropertyToInt(playerStyleRef.top);
-    let left = convertPropertyToInt(playerStyleRef.left);
-    let pixelPerMove = 5;
+    elem === null ? playerStyleRef = elemPlayer.style : playerStyleRef = elem.style;
 
+    // A basic container-variable to store the left and top position, using the helper-/convertermethod, and the amount of pixels per move
+    let topPos = convertPropertyToInt(playerStyleRef.top);
+    let leftPos = convertPropertyToInt(playerStyleRef.left);
+    let pixelsPerMove = 1;
+
+    // A decision based on the direction to move an element, governed by the playing field's rules (container edges, ...)
     switch(direction){
         case "up":
-            if (top > 0){
-                playerStyleRef.top = `${top - pixelPerMove}px`;
-                playerStyleRef.bottom = `${top - pixelPerMove + playerHeight}px`;
+            if (topPos > 0){
+                // Rules concerning the top and bottom of the container
+                playerStyleRef.top = `${topPos - pixelsPerMove}px`;
+                playerStyleRef.bottom = `${topPos - pixelsPerMove + playerHeight}px`;
             }
             break;
             
         case "down":
+            // Rules concerning the top and bottom of the container
             let gamecontainerHeight = getGameContainerHeight();
             if (convertPropertyToInt(playerStyleRef.bottom) < gamecontainerHeight){
-                playerStyleRef.top = `${top + pixelPerMove}px`;
-                playerStyleRef.bottom = `${top + pixelPerMove + playerHeight}px`;
+                playerStyleRef.top = `${topPos + pixelsPerMove}px`;
+                playerStyleRef.bottom = `${topPos + pixelsPerMove + playerHeight}px`;
             }
             break;
             
         case "left":
+            // Rules concerning the left and right edges of the container
             if (convertPropertyToInt(playerStyleRef.left) > 0){
-                playerStyleRef.left = `${left - pixelPerMove}px`;
-                playerStyleRef.right = `${left - pixelPerMove + playerWidth}px`;
+                playerStyleRef.left = `${leftPos - pixelsPerMove}px`;
+                playerStyleRef.right = `${leftPos - pixelsPerMove + playerWidth}px`;
             }
             break;
             
         case "right":
+            // Rules concerning the left and right edges of the container
             let gameContainerWidth = getGameContainerWidth();
             if (convertPropertyToInt(playerStyleRef.right) < gameContainerWidth){
-                playerStyleRef.left = `${left + pixelPerMove}px`;
-                playerStyleRef.right = `${left + pixelPerMove + playerWidth}px`;
+                playerStyleRef.left = `${leftPos + pixelsPerMove}px`;
+                playerStyleRef.right = `${leftPos + pixelsPerMove + playerWidth}px`;
             }
             break;
     }
