@@ -35,11 +35,20 @@ body{
 }
 
 #player {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 33px;
     
-    background-color: red;
+    /*background-color: red;*/
+    /*background: url(/img/player/Skeleton\ Idle.gif) 0 0;*/
     
     position: relative; /*relative*/
     box-sizing: border-box; /* Exclusief margins*/
+}
+
+.playerWalking {
+    background: url(/img/player/Skeleton\ Walk.gif) 0 0;
+}
+
+.playerIdle {
+    background: url(/img/player/Skeleton\ Idle.gif) 0 0;
 }

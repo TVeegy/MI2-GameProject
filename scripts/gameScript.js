@@ -120,7 +120,7 @@ let arrowKeys = {left:'37', up:'38', right:'39', down:'40'};
 let keycodeMap = {};
 
 // Variable to indentify whether a move is started/stopped. (keydown or keyup)
-let isStartMoveController = false;
+let isKeyUpEvent = false;
 
 /* ---------------------------------------------------------------------------------------------- */
 /* ----------------------------------- *//* Eventhandler *//* ----------------------------------- */
@@ -134,8 +134,16 @@ function HandleKeyEvent(e)
     keycodeMap[e.keyCode] = e.type == 'keydown';
     
     // Defining if we configure the moveController for movement or deconfigure it for stopping movement.
-    if(e.type == 'keydown') isStartMoveController = false;
-    else isStartMoveController = true;
+    if(e.type == 'keydown') 
+    {
+        isKeyUpEvent = false;
+        HandleAppearance(true);
+    }
+    else 
+    {
+        isKeyUpEvent = true;
+        HandleAppearance(false);
+    }
 
     // Check if the input keycode is an arrow-key of the arrowKeys variable.
     if (Object.values(arrowKeys).indexOf(e.keyCode.toString()) > -1) 
@@ -146,25 +154,48 @@ function HandleKeyEvent(e)
         // Configure the moveController according to the used key and purpose.
         switch(e.keyCode.toString()){
             case '37':
-                if (isStartMoveController) ConfigureStopMoveController('left');
+                if (isKeyUpEvent) ConfigureStopMoveController('left');
                 else ConfigureStartMoveController('left');
                 break;
 
             case '39':
-                if (isStartMoveController) ConfigureStopMoveController('right');
+                if (isKeyUpEvent) ConfigureStopMoveController('right');
                 else ConfigureStartMoveController('right');
                 break;
 
             case '38':
-                if (isStartMoveController) ConfigureStopMoveController('up');
+                if (isKeyUpEvent) ConfigureStopMoveController('up');
                 else ConfigureStartMoveController('up');
+                elemPlayer.classList.remove('playerWalking');
+                elemPlayer.classList.add('playerIdle');
                 break;
 
             case '40':
-                if (isStartMoveController) ConfigureStopMoveController('down');
+                if (isKeyUpEvent) ConfigureStopMoveController('down');
                 else ConfigureStartMoveController('down');
+                elemPlayer.classList.remove('playerIdle');
+                elemPlayer.classList.add('playerWalking');
+                
                 break;
         }
+    }
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------- *//* Appearance Handling *//* -------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+
+function HandleAppearance(isWalking) 
+{
+    if (isWalking)
+    {
+        elemPlayer.classList.remove('playerIdle');
+        elemPlayer.classList.add('playerWalking');
+    }
+    else 
+    {
+        elemPlayer.classList.remove('playerWalking');
+        elemPlayer.classList.add('playerIdle');
     }
 }
 
