@@ -128,6 +128,7 @@ let isKeyUpEvent = false;
 
 function HandleKeyEvent(e) 
 {
+    
     e = e || event; // Dealing with IE.
 
     // Mapping the key and its current state (if keydown -> true).
@@ -137,12 +138,18 @@ function HandleKeyEvent(e)
     if(e.type == 'keydown') 
     {
         isKeyUpEvent = false;
-        HandleAppearance(true);
+        HandlePlayerSprite(true);
+        HandleAppearanceFlipping(true);
     }
     else 
     {
         isKeyUpEvent = true;
-        HandleAppearance(false);
+        if (moveController.firstDirection == '' || moveController.secondDirection == '')
+        {
+            HandlePlayerSprite(false);
+            HandleAppearanceFlipping(false);
+        }
+        
     }
 
     // Check if the input keycode is an arrow-key of the arrowKeys variable.
@@ -166,15 +173,11 @@ function HandleKeyEvent(e)
             case '38':
                 if (isKeyUpEvent) ConfigureStopMoveController('up');
                 else ConfigureStartMoveController('up');
-                elemPlayer.classList.remove('playerWalking');
-                elemPlayer.classList.add('playerIdle');
                 break;
 
             case '40':
                 if (isKeyUpEvent) ConfigureStopMoveController('down');
                 else ConfigureStartMoveController('down');
-                elemPlayer.classList.remove('playerIdle');
-                elemPlayer.classList.add('playerWalking');
                 
                 break;
         }
@@ -185,18 +188,62 @@ function HandleKeyEvent(e)
 /* ------------------------- *//* Appearance Handling *//* -------------------------- */
 /* ---------------------------------------------------------------------------------------------- */
 
-function HandleAppearance(isWalking) 
+animateScript();
+var tID; //we will use this variable to clear the setInterval()
+function animateScript() {
+    let spriteWidth = playerWidth;
+    let slicerPosition = spriteWidth;
+    let slicesShowed = 0;
+
+    tID = setInterval ( () => {
+        slicesShowed++;
+        elemPlayer.style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player2').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player3').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player4').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player5').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player6').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('player7').style.backgroundPosition = `-${slicerPosition}px`;
+
+        if (slicesShowed != 4)
+        { slicerPosition = slicerPosition + spriteWidth;}
+        else
+        { slicerPosition = spriteWidth; slicesShowed = 0;}
+    }
+    , 125 );
+} 
+
+var constructSpriteClassName = function(spriteType){
+    return 'player' + spriteType.substr(0,1).toUpperCase() + spriteType.substr(1,spriteType.length);
+}
+
+let currentSpriteType = 'idle';
+HandlePlayerSprite('idle');
+document.getElementById('player2').classList.add('playerWalking');
+document.getElementById('player3').classList.add('playerRunning');
+document.getElementById('player4').classList.add('playerJumping');
+document.getElementById('player5').classList.add('playerAttacking');
+document.getElementById('player6').classList.add('playerHurt');
+document.getElementById('player7').classList.add('playerDying');
+
+function HandlePlayerSprite(newSpriteType) 
 {
-    if (isWalking)
+    elemPlayer.classList.remove(constructSpriteClassName(currentSpriteType));
+    currentSpriteType = newSpriteType;
+    elemPlayer.classList.add(constructSpriteClassName(currentSpriteType));
+}
+
+function HandleAppearanceFlipping(isFlipped) 
+{
+    if (isFlipped)
     {
-        elemPlayer.classList.remove('playerIdle');
-        elemPlayer.classList.add('playerWalking');
+        elemPlayer.classList.add('playerFlipped');
     }
     else 
     {
-        elemPlayer.classList.remove('playerWalking');
-        elemPlayer.classList.add('playerIdle');
+        elemPlayer.classList.remove('playerFlipped');
     }
+    
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -380,14 +427,14 @@ function MoveElementPosition(moveDirection, movedElementStyle)
     let pixelsPerMove = moveController.moveSpeed;
 
     // Filtering on up/down using an if-else statement wherein we filter on left/right using a ternary operator.
-    if (moveDirection == 'up' || moveDirection == 'down')
+    if (moveDirection === 'up' || moveDirection === 'down')
     {
-        movedElementStyle.top = moveDirection == 'down' ? `${topPos + pixelsPerMove}px` : `${topPos - pixelsPerMove}px`;
-        movedElementStyle.bottom = moveDirection == 'down' ? `${topPos + pixelsPerMove + playerHeight}px` : `${topPos - pixelsPerMove + playerHeight}px`;
+        movedElementStyle.top = moveDirection === 'down' ? `${topPos + pixelsPerMove}px` : `${topPos - pixelsPerMove}px`;
+        movedElementStyle.bottom = moveDirection === 'down' ? `${topPos + pixelsPerMove + playerHeight}px` : `${topPos - pixelsPerMove + playerHeight}px`;
     }
     else
     {
-        movedElementStyle.left = moveDirection == 'right' ? `${leftPos + pixelsPerMove}px` : `${leftPos - pixelsPerMove}px`;
-        movedElementStyle.right = moveDirection == 'right' ? `${leftPos + pixelsPerMove + playerWidth}px` : `${leftPos - pixelsPerMove + playerWidth}px`;
+        movedElementStyle.left = moveDirection === 'right' ? `${leftPos + pixelsPerMove}px` : `${leftPos - pixelsPerMove}px`;
+        movedElementStyle.right = moveDirection === 'right' ? `${leftPos + pixelsPerMove + playerWidth}px` : `${leftPos - pixelsPerMove + playerWidth}px`;
     }
 }

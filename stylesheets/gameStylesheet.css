@@ -35,20 +35,102 @@ body{
 }
 
 #player {
-    width: 22px;
-    height: 33px;
+    /*width: 387px;
+    height: 350px;*/
+
+    width: 50px;
+    height: 50px;
     
-    /*background-color: red;*/
-    /*background: url(/img/player/Skeleton\ Idle.gif) 0 0;*/
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
     
     position: relative; /*relative*/
     box-sizing: border-box; /* Exclusief margins*/
 }
 
-.playerWalking {
-    background: url(/img/player/Skeleton\ Walk.gif) 0 0;
+#player2 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
+}
+#player3 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
+}
+#player4 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
+}
+#player5 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
+}
+#player6 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
+}
+#player7 {
+    width: 50px;
+    height: 50px;
+    
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    
+    position: relative; /*relative*/
+    box-sizing: border-box; /* Exclusief margins*/
 }
 
 .playerIdle {
-    background: url(/img/player/Skeleton\ Idle.gif) 0 0;
+    background: url(/img/player/wizard/SpritesSheets/IdleWizardSprite.png) no-repeat;
 }
+.playerAttacking {
+    background: url(/img/player/wizard/SpritesSheets/AttackingWizardSprite.png) no-repeat;
+}
+.playerWalking {
+    background: url(/img/player/wizard/SpritesSheets/WalkingWizardSprite.png) no-repeat;
+}
+.playerRunning {
+    background: url(/img/player/wizard/SpritesSheets/RunningWizardSprite.png) no-repeat;
+}
+.playerJumping {
+    background: url(/img/player/wizard/SpritesSheets/JumpingWizardSprite.png) no-repeat;
+}
+.playerHurt {
+    background: url(/img/player/wizard/SpritesSheets/HurtWizardSprite.png) no-repeat;
+}
+.playerDying {
+    background: url(/img/player/wizard/SpritesSheets/DyingWizardSprite.png) no-repeat;
+}
+
+/*.playerFlipped {
+    transform: scaleX(-1);
+}*/
