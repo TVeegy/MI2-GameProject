@@ -198,12 +198,12 @@ function animateScript() {
     tID = setInterval ( () => {
         slicesShowed++;
         elemPlayer.style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player2').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player3').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player4').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player5').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player6').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('player7').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerWalking').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerRunning').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerJumping').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerAttacking').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerHurt').style.backgroundPosition = `-${slicerPosition}px`;
+        document.getElementById('playerDying').style.backgroundPosition = `-${slicerPosition}px`;
 
         if (slicesShowed != 4)
         { slicerPosition = slicerPosition + spriteWidth;}
@@ -219,12 +219,12 @@ var constructSpriteClassName = function(spriteType){
 
 let currentSpriteType = 'idle';
 HandlePlayerSprite('idle');
-document.getElementById('player2').classList.add('playerWalking');
-document.getElementById('player3').classList.add('playerRunning');
-document.getElementById('player4').classList.add('playerJumping');
-document.getElementById('player5').classList.add('playerAttacking');
-document.getElementById('player6').classList.add('playerHurt');
-document.getElementById('player7').classList.add('playerDying');
+document.getElementById('playerWalking').classList.add('playerWalking');
+document.getElementById('playerRunning').classList.add('playerRunning');
+document.getElementById('playerJumping').classList.add('playerJumping');
+document.getElementById('playerAttacking').classList.add('playerAttacking');
+document.getElementById('playerHurt').classList.add('playerHurt');
+document.getElementById('playerDying').classList.add('playerDying');
 
 function HandlePlayerSprite(newSpriteType) 
 {

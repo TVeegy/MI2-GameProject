@@ -43,70 +43,105 @@ body{
     
     background-color: rgb(243, 231, 240);
     background-size: 250px;
+    border: solid blue 1px;
     
     position: relative; /*relative*/
     box-sizing: border-box; /* Exclusief margins*/
 }
 
-#player2 {
-    width: 50px;
-    height: 50px;
-    
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    
-    position: relative; /*relative*/
+.hitboxStyle{
+    background-color: transparent;
+    border: solid red 1px;
+
+    position: absolute; /*relative*/
     box-sizing: border-box; /* Exclusief margins*/
 }
-#player3 {
-    width: 50px;
-    height: 50px;
-    
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    
-    position: relative; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+#hitboxIdle{
+    top: 3px;
+    left: 1px;
+
+    width: 42px;
+    height: 44px;
 }
-#player4 {
-    width: 50px;
-    height: 50px;
-    
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    
-    position: relative; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+#hitboxWalking{
+    top: 4px;
+    left: 1px;
+
+    width: 41px;
+    height: 42px;
 }
-#player5 {
-    width: 50px;
-    height: 50px;
-    
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    
-    position: relative; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+#hitboxRunning{
+    top: 5px;
+    left: 2px;
+
+    width: 39px;
+    height: 38px;
 }
-#player6 {
-    width: 50px;
-    height: 50px;
-    
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    
-    position: relative; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+#hitboxJumping{
+    top: 4px;
+    left: 1px;
+
+    width: 42px;
+    height: 43px;
 }
-#player7 {
+#hitboxAttacking{
+    top: 11px;
+    left: 1px;
+
+    width: 29px;
+    height: 27px;
+}
+#hitboxHurt{
+    top: 7px;
+    left: 4px;
+
+    width: 37px;
+    height: 35px;
+}
+#hitboxDying{
+    top: 7px;
+    left: 2px;
+
+    width: 37px;
+    height: 38px;
+}
+
+.playerStyleCopy{
     width: 50px;
     height: 50px;
     
+    box-sizing: border-box; /* Exclusief margins*/
+    border: solid blue 1px;
+}
+
+#playerWalking {
     background-color: rgb(243, 231, 240);
     background-size: 250px;
-    
     position: relative; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+}
+#playerRunning {
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    position: relative; /*relative*/
+}
+#playerJumping {
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    position: relative; /*relative*/
+}
+#playerAttacking {
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    position: relative; /*relative*/
+}
+#playerHurt {
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    position: relative; /*relative*/
+}#playerDying {
+    background-color: rgb(243, 231, 240);
+    background-size: 250px;
+    position: relative; /*relative*/
 }
 
 .playerIdle {
