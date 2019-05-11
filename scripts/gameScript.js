@@ -128,7 +128,6 @@ let isKeyUpEvent = false;
 
 function HandleKeyEvent(e) 
 {
-    
     e = e || event; // Dealing with IE.
 
     // Mapping the key and its current state (if keydown -> true).
@@ -138,7 +137,7 @@ function HandleKeyEvent(e)
     if(e.type == 'keydown') 
     {
         isKeyUpEvent = false;
-        HandlePlayerSprite(true);
+        HandlePlayerSprite();
         HandleAppearanceFlipping(true);
     }
     else 
@@ -146,7 +145,7 @@ function HandleKeyEvent(e)
         isKeyUpEvent = true;
         if (moveController.firstDirection == '' || moveController.secondDirection == '')
         {
-            HandlePlayerSprite(false);
+            HandlePlayerSprite();
             HandleAppearanceFlipping(false);
         }
         
@@ -188,7 +187,8 @@ function HandleKeyEvent(e)
 /* ------------------------- *//* Appearance Handling *//* -------------------------- */
 /* ---------------------------------------------------------------------------------------------- */
 
-animateScript();
+document.getElementById('player').classList.add('playerWalking');
+
 var tID; //we will use this variable to clear the setInterval()
 function animateScript() {
     let spriteWidth = playerWidth;
@@ -226,11 +226,10 @@ document.getElementById('playerAttacking').classList.add('playerAttacking');
 document.getElementById('playerHurt').classList.add('playerHurt');
 document.getElementById('playerDying').classList.add('playerDying');
 
-function HandlePlayerSprite(newSpriteType) 
+function HandlePlayerSprite() 
 {
-    elemPlayer.classList.remove(constructSpriteClassName(currentSpriteType));
-    currentSpriteType = newSpriteType;
-    elemPlayer.classList.add(constructSpriteClassName(currentSpriteType));
+    elemPlayer.classList.remove('playerStandard');
+    elemPlayer.classList.add('playerStandard');
 }
 
 function HandleAppearanceFlipping(isFlipped) 
