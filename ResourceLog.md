@@ -1,4 +1,4 @@
-# Ideetjes  
+# Ideetjes - Gebruikte websites
   * (Creating Sprite Sheets out of single images) https://www.codeandweb.com/free-sprite-sheet-packer
   * (How to animate a sprite sheet using image-slicer code instead of loading images) https://medium.com/dailyjs/how-to-build-a-simple-sprite-animation-in-javascript-b764644244aa
   * (https://www.w3schools.com/) General refreshment of common programming logic
