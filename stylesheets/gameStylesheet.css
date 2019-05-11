@@ -35,38 +35,63 @@ body{
 }
 
 #player {
-    /*width: 387px;
-    height: 350px;*/
-
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     
-    background-color: rgb(243, 231, 240);
-    background-size: 250px;
-    border: solid blue 1px;
+    border-radius: 50%;
+    background: url(/img/player/playerOrb.gif) no-repeat;
+
+    background-size: 50px;
+    background-position: -1.8px -2.5px;
+    background-color: black;
     
     position: relative; /*relative*/
     box-sizing: border-box; /* Exclusief margins*/
+    
 }
-
-.hitboxStyle{
-    background-color: transparent;
-    border: solid red 1px;
-
-    position: absolute; /*relative*/
-    box-sizing: border-box; /* Exclusief margins*/
+.playerDied{
+    background-size: 0px;
+    background-position: 23px 23px;
 }
-#hitboxPlayer{
-    top: 3px;
-    left: 1px;
-
-    width: 42px;
-    height: 44px;
+.player05{
+    background-size: 5px;
+    background-position: 20.5px 20.5px;
 }
-
-
+.player10{
+    background-size: 10px;
+    background-position: 18px 18px;
+}
+.player15{
+    background-size: 15px;
+    background-position: 15.5px 15.5px;
+}
+.player20{
+    background-size: 20px;
+    background-position: 13px 13px;
+}
+.player25{
+    background-size: 25px;
+    background-position: 11px 11px;
+}
+.player30{
+    background-size: 30px;
+    background-position: 8px 9px;
+}
+.player35{
+    background-size: 35px;
+    background-position: 6px 5px;
+}
+.player40{
+    background-size: 40px;
+    background-position: 3.2px 2.5px;
+}
+.player45{
+    background-size: 45px;
+    background-position: 0.7px -0px;
+}
 .playerNormal {
-    background: url(/img/player/playerOrb.gif) no-repeat;
+    background-size: 50px;
+    background-position: -2px -2px;
 }
 
 .playerFlipped {

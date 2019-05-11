@@ -11,6 +11,7 @@
 /* --------------------------------------------------------------------------------------------------------- */
 
 var elemPlayer = document.getElementById("player");
+var elemPlayerStyleRef = elemPlayer.style;
 var elemGameContainer = document.getElementById("gameContainer");
 
 var playerWidth = $("#player").outerWidth();
@@ -41,15 +42,15 @@ var getPlayerHeight = function(){
 // Configuring the player's properties to it's default values for this game regarding position.
 DefaultPlayerPosition();
 function DefaultPlayerPosition(){
-    let playerStyleRef = elemPlayer.style;
+    let playerStyleRef = elemPlayerStyleRef;
 
     let startPositionX = 0;
     let startPositionY = 0;
 
-    playerStyleRef.left = `${startPositionX}px`;
-    playerStyleRef.right = `${startPositionX + getPlayerWidth()}px`;
-    playerStyleRef.top = `${startPositionY}px`;
-    playerStyleRef.bottom = `${startPositionY + getPlayerHeight()}px`;
+    elemPlayerStyleRef.left = `${startPositionX}px`;
+    elemPlayerStyleRef.right = `${startPositionX + getPlayerWidth()}px`;
+    elemPlayerStyleRef.top = `${startPositionY}px`;
+    elemPlayerStyleRef.bottom = `${startPositionY + getPlayerHeight()}px`;
 }
 
 // A precaution for overflow and animation issues, adapting the container to the player dimensions.
@@ -82,8 +83,8 @@ function ConvertPropertyToInt(propertyValue){
 /* --------------------------------------------------------------------------------------------------------- */
 
 // moveSpeed = pixels per move -- first-/secondMoveFlag = booleans signaling if player moves or not.
-//first-/secondDirection = directions in which one moves, multiple because of diagonal movement -- gravity = force that pulls back what went up.
-let moveController = { moveSpeed: 1, firstMoveFlag: false, secondMoveFlag: false, firstDirection: '', secondDirection: '', gravity: 0 };
+//first-/secondDirection = directions in which one moves, multiple because of diagonal movement.
+let moveController = { moveSpeed: 1, firstMoveFlag: false, secondMoveFlag: false, firstDirection: '', secondDirection: ''};
 
 // Attachement of getter and setter properties which will trigger or fire other events/methods.
 Object.defineProperties(moveController, {
@@ -99,9 +100,6 @@ Object.defineProperties(moveController, {
     'setFirstMoveDirection': { set: function(value) { this.firstDirection = value; }},
     'getSecondMoveDirection': { get: function() { return this.secondDirection; }},
     'setSecondMoveDirection': { set: function(value) { this.secondDirection = value; }},
-
-    'getGravity': { get: function() { return this.gravity; }},
-    'setGravity': { set: function(value) { this.gravity = value; }}
 });
 
 /* ------------------------------------------------------------------------------------------------------------------------ */
@@ -137,16 +135,16 @@ function HandleKeyEvent(e)
     if(e.type == 'keydown') 
     {
         isKeyUpEvent = false;
-        HandlePlayerSprite();
-        HandleAppearanceFlipping(true);
+        //HandlePlayerSprite();
+        //HandleAppearanceFlipping(true);
     }
     else 
     {
         isKeyUpEvent = true;
         if (moveController.firstDirection == '' || moveController.secondDirection == '')
         {
-            HandlePlayerSprite();
-            HandleAppearanceFlipping(false);
+            //HandlePlayerSprite();
+            //HandleAppearanceFlipping(false);
         }
         
     }
@@ -197,7 +195,7 @@ function animateScript() {
 
     tID = setInterval ( () => {
         slicesShowed++;
-        elemPlayer.style.backgroundPosition = `-${slicerPosition}px`;
+        elemPlayerStyleRef.backgroundPosition = `-${slicerPosition}px`;
         document.getElementById('playerWalking').style.backgroundPosition = `-${slicerPosition}px`;
         document.getElementById('playerRunning').style.backgroundPosition = `-${slicerPosition}px`;
         document.getElementById('playerJumping').style.backgroundPosition = `-${slicerPosition}px`;
@@ -217,16 +215,7 @@ var constructSpriteClassName = function(spriteType){
     return 'player' + spriteType.substr(0,1).toUpperCase() + spriteType.substr(1,spriteType.length);
 }
 
-let currentSpriteType = 'idle';
-HandlePlayerSprite('idle');
-document.getElementById('playerWalking').classList.add('playerWalking');
-document.getElementById('playerRunning').classList.add('playerRunning');
-document.getElementById('playerJumping').classList.add('playerJumping');
-document.getElementById('playerAttacking').classList.add('playerAttacking');
-document.getElementById('playerHurt').classList.add('playerHurt');
-document.getElementById('playerDying').classList.add('playerDying');
-
-function HandlePlayerSprite() 
+/*function HandlePlayerSprite() 
 {
     elemPlayer.classList.remove('playerStandard');
     elemPlayer.classList.add('playerStandard');
@@ -243,7 +232,7 @@ function HandleAppearanceFlipping(isFlipped)
         elemPlayer.classList.remove('playerFlipped');
     }
     
-}
+}*/
 
 /* ---------------------------------------------------------------------------------------------- */
 /* ------------------------- *//* Configuring the move-controller *//* -------------------------- */
@@ -379,7 +368,7 @@ function ExecuteMoveAnimationFrame(moveDirection) {
 function ExecuteMovingProcess(moveDirection, movedElement = null){
     // A basic container-variable to store the style reference of a given element or the player (per default).
     let movedElementStyle;
-    movedElement == null ? movedElementStyle = elemPlayer.style : movedElementStyle = movedElement.style;
+    movedElement == null ? movedElementStyle = elemPlayerStyleRef : movedElementStyle = movedElement.style;
 
     // Applying movement-restriction rules before actually moving the element on the screen.
     let topRule = ConvertPropertyToInt(movedElementStyle.top) > 0;
