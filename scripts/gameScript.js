@@ -18,7 +18,7 @@ var playerWidth = $("#player").outerWidth();
 var playerHeight = $("#player").outerHeight();
 
 /* --------------------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Expressies regarding DOM-elements *//* ------------------------- */
+/* ------------------------- *//* Expressions regarding DOM-elements *//* ------------------------- */
 /* --------------------------------------------------------------------------------------------------------- */
 
 // Expressions for retrieving up-to-date element-properties.
@@ -135,18 +135,10 @@ function HandleKeyEvent(e)
     if(e.type == 'keydown') 
     {
         isKeyUpEvent = false;
-        //HandlePlayerSprite();
-        //HandleAppearanceFlipping(true);
     }
     else 
     {
         isKeyUpEvent = true;
-        if (moveController.firstDirection == '' || moveController.secondDirection == '')
-        {
-            //HandlePlayerSprite();
-            //HandleAppearanceFlipping(false);
-        }
-        
     }
 
     // Check if the input keycode is an arrow-key of the arrowKeys variable.
@@ -175,64 +167,10 @@ function HandleKeyEvent(e)
             case '40':
                 if (isKeyUpEvent) ConfigureStopMoveController('down');
                 else ConfigureStartMoveController('down');
-                
                 break;
         }
     }
 }
-
-/* ---------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Appearance Handling *//* -------------------------- */
-/* ---------------------------------------------------------------------------------------------- */
-
-document.getElementById('player').classList.add('playerWalking');
-
-var tID; //we will use this variable to clear the setInterval()
-function animateScript() {
-    let spriteWidth = playerWidth;
-    let slicerPosition = spriteWidth;
-    let slicesShowed = 0;
-
-    tID = setInterval ( () => {
-        slicesShowed++;
-        elemPlayerStyleRef.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerWalking').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerRunning').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerJumping').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerAttacking').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerHurt').style.backgroundPosition = `-${slicerPosition}px`;
-        document.getElementById('playerDying').style.backgroundPosition = `-${slicerPosition}px`;
-
-        if (slicesShowed != 4)
-        { slicerPosition = slicerPosition + spriteWidth;}
-        else
-        { slicerPosition = spriteWidth; slicesShowed = 0;}
-    }
-    , 125 );
-} 
-
-var constructSpriteClassName = function(spriteType){
-    return 'player' + spriteType.substr(0,1).toUpperCase() + spriteType.substr(1,spriteType.length);
-}
-
-/*function HandlePlayerSprite() 
-{
-    elemPlayer.classList.remove('playerStandard');
-    elemPlayer.classList.add('playerStandard');
-}
-
-function HandleAppearanceFlipping(isFlipped) 
-{
-    if (isFlipped)
-    {
-        elemPlayer.classList.add('playerFlipped');
-    }
-    else 
-    {
-        elemPlayer.classList.remove('playerFlipped');
-    }
-    
-}*/
 
 /* ---------------------------------------------------------------------------------------------- */
 /* ------------------------- *//* Configuring the move-controller *//* -------------------------- */
@@ -425,4 +363,96 @@ function MoveElementPosition(moveDirection, movedElementStyle)
         movedElementStyle.left = moveDirection === 'right' ? `${leftPos + pixelsPerMove}px` : `${leftPos - pixelsPerMove}px`;
         movedElementStyle.right = moveDirection === 'right' ? `${leftPos + pixelsPerMove + playerWidth}px` : `${leftPos - pixelsPerMove + playerWidth}px`;
     }
+}
+
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* ---------------------------- *//* DYING - LIVING *//* ---------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+
+/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------- *//* Appearance Handling *//* -------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+
+var constructSpriteClassName = function(spriteType){
+    return 'player' + spriteType.substr(0,1).toUpperCase() + spriteType.substr(1,spriteType.length);
+}
+
+function HandlePlayerSprite() 
+{
+    elemPlayer.classList.remove('playerNormal');
+    elemPlayer.classList.add('playerDied');
+}
+
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* ---------------------------- *//* ENEMY AI *//* ---------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+
+/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------- *//* Enemy AIg *//* -------------------------- */
+/* ---------------------------------------------------------------------------------------------- */
+let elemOpponent;
+
+let opponentController = { moveSpeed: 1, Left: 0, Top: 0, firstDirection: '', secondDirection: ''};
+
+// Attachement of getter and setter properties which will trigger or fire other events/methods.
+Object.defineProperties(opponentController, {
+    'getMoveSpeed': { get: function() { return this.moveSpeed; }},
+    'setMoveSpeed': { set: function(value) { this.moveSpeed = value; }},
+    
+    'getLeft': { get: function() { return this.Left; }},
+    'setLeft': { set: function(value) { this.Left = value; }},
+    'getTop': { get: function() { return this.Top; }},
+    'setTop': { set: function(value) { this.Top = value; }},
+
+    'getFirstMoveDirection': { get: function() { return this.firstDirection; }},
+    'setFirstMoveDirection': { set: function(value) { this.firstDirection = value; }},
+    
+    'getSecondMoveDirection': { get: function() { return this.secondDirection; }},
+    'setSecondMoveDirection': { set: function(value) { this.secondDirection = value; }},
+});
+
+configureOpponent();
+function configureOpponent(){
+    elemOpponent = document.getElementById('opponent');
+    opponentController.Left = 100;
+    opponentController.Top = 50;
+    let opponentWidth = 20;
+
+    elemOpponent.style.left = `${opponentController.Left}px`;
+    elemOpponent.style.right = `${opponentController.Left + opponentWidth}px`;
+    elemOpponent.style.top = `${opponentController.Top}px`;
+    elemOpponent.style.bottom = `${opponentController.Top + opponentWidth}px`;
+}
+
+
+getOpponentMoving();
+function getOpponentMoving() {
+    let counter = 0;
+    /*requestAnimationFrame(function moveOpponent() {
+        opponentController.Left = opponentController.Left + 1;
+        opponentController.Top = opponentController.Top + 1;
+        console.log(`top: ${opponentController.Top} en left: ${opponentController.Left}`);
+
+        elemOpponent.style.left = `${opponentController.Left}px`;
+        elemOpponent.style.top = `${opponentController.Top}px`;
+
+        console.log('beep'); counter++;
+        if (counter < 50) requestAnimationFrame(moveOpponent);
+    });*/
+
+    let interval = setInterval(function() {
+        opponentController.Left = opponentController.Left + 1;
+        opponentController.Top = opponentController.Top + 1;
+        console.log(`top: ${opponentController.Top} en left: ${opponentController.Left}`);
+
+        elemOpponent.style.left = `${opponentController.Left}px`;
+        elemOpponent.style.top = `${opponentController.Top}px`;
+
+        console.log('beep'); counter++;
+        if (counter == 50){ clearInterval(interval); counter = 0;}
+    }, 20);
 }
