@@ -4,3 +4,4 @@
   * (https://www.w3schools.com/) General refreshment of common programming logic
   * (A guide on scaling images using CSS) https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Backgrounds_and_Borders/Scaling_background_images
   * (A good source of free and premium 2D art) https://craftpix.net/
+  * (Joystick source) https://github.com/jeromeetienne/virtualjoystick.js/blob/master/README.md

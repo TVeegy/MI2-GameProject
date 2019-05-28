@@ -4,14 +4,26 @@
         <title>Tibio platformer</title>
         <link rel="stylesheet" href="stylesheets/gameStylesheet.css" />
         <script src="scripts/JQuery.js"></script>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--Import Google Icon Font-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="materialize/css/materialize.min.css"/>
+
+        <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     
     <body>
-        <div id="gameContainer" style="padding: 1px; height: 50vh; width: 75vh;">
-            <div id="player" class="playerNormal"></div>
-            <div id="opponent"></div>
+        <div id="gameContainer">
+            <div id="player"></div>
+            <div id='stickContainer' class="stick">
+                <canvas class='stick' id='stickContainer' width="126" height="126" style="position: absolute; left: 239.807px; top: 203.667px; display: none;"></canvas>
+			    <canvas class='stick' id='stick' width="86" height="86" style="position: absolute; left: 389.632px; top: 295.947px; display: none;"></canvas>
+            </div>
         </div>
+        <script rc="materialize/js/materialize.min.js"></script>
+        <script src="scripts/virtualjoystick.js"></script>
         <script src="scripts/gameScript.js"></script>
     </body>
 </html>
