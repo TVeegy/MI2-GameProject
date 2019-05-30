@@ -1,5 +1,39 @@
 "use strict";
 
+function ShortCutOverview(){};
+function Overview(){
+    // Configurations
+    DefaultPlayerPosition;
+    ConfigureContainerDimensions;
+    // Movement controller
+    playerController;
+    // Keypress to movement mechanics
+    HandleKeyEvent;
+    ConfigureStartMoveController;
+    ConfigureStopMoveController;
+    // Joystick
+    CreateJoystick;
+    // Player moving sequencing
+    StartSequencingFrames;
+    ExecuteMovingProcess;
+    // Player lifecycle
+    RespawnPlayer;
+    KillPlayer;
+    // Opponent
+    opponentController;
+    CreateOpponent;
+    AnimateOpponent;
+    KillOpponent;
+    // Bullet
+    CreateBullet;
+    AnimateBullet;
+    KillBullet;
+    // Joystick
+    CreateJoystick;
+}
+
+
+
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* ----------------------------------- *//* SECTION GLOBAL VARIABLES *//* ---------------------------------- *///
@@ -7,21 +41,21 @@
 ///* --------------------------------------------------------------------------------------------------------- *///
 
 /* --------------------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Saved DOM-elements and their properties *//* ------------------------- */
+/* ------------------------- *//* Saved DOM-elements and their properties *//* ------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------- */
 
 let elemPlayer = document.getElementById("player");
 let playerStyle = elemPlayer.style;
 let elemGameContainer = document.getElementById("gameContainer");
+let mobileFlag = false;
 // Configuring the player's properties to it's default values for this game regarding position.
 DefaultPlayerPosition(elemPlayer);
 let playerWidth = $("#player").outerWidth();
 let playerHeight = $("#player").outerHeight();
 
 
-
 /* --------------------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Expressions regarding DOM-elements *//* ------------------------- */
+/* ------------------------- *//* Expressions regarding DOM-elements *//* ------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------- */
 
 // Expressions for retrieving up-to-date element-properties.
@@ -39,14 +73,72 @@ var getPlayerHeight = function(){
 }
 
 /* --------------------------------------------------------------------------------------------------------- */
-/* ----------------------------------- *//* Default Player configurations *//* ----------------------------------- */
+/* ----------------------------------- *//* Global-/Helperfunctions *//* ----------------------------------- */ Overview
+/* --------------------------------------------------------------------------------------------------------- */
+
+// Converts a position-property(pixel) to a workable integer.
+function ConvertPropertyToInt(propertyValue){
+    return parseInt(propertyValue.replace('px', ''), 10);
+}
+
+function ConvertIntToPixelProperty(propertyValue){
+    return `${propertyValue}px`;
+}
+
+
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* ----------------------------------- *//* SECTION Configuration & Controllers *//* ---------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Game statistics controller *//* ----------------------------------- */ Overview
+/* --------------------------------------------------------------------------------------------------------- */
+let gameController = { playerDeaths: 0, playerTimes: [], opponentsKilled: 0, bulletsFired: 0, bulletsKilled: 0 };
+let elemPlayerDeaths = document.getElementById('playerDeaths');
+let elemOpponentsKilled = document.getElementById('opponentsKilled');
+let elemBulletsFired = document.getElementById('bulletsFired');
+let elemBulletsKilled = document.getElementById('bulletsKilled');
+// Attachement of getter and setter properties which will trigger or fire other events/methods.
+Object.defineProperties(gameController, {
+    'getplayerDeaths': { get: function() { return this.playerDeaths;}},
+    'setplayerDeaths': { set: function(value) { this.playerDeaths = value; elemPlayerDeaths.innerHTML = `Player deaths: ${value}`}},
+    
+    'getPlayerTimes': { get: function() { return this.playerTimes; }},
+    'setPlayerTimes': { set: function(value) { this.playerTimes = value;}},
+
+    'getOpponentsKilled': { get: function() { return this.opponentsKilled; }},
+    'setOpponentsKilled': { set: function(value) { this.opponentsKilled = value; elemOpponentsKilled.innerHTML = `Opponents killed: ${value}`}},
+
+    'getBulletsFired': { get: function() { return this.bulletsFired; }},
+    'setBulletsFired': { set: function(value) { this.bulletsFired = value; elemBulletsFired.innerHTML = `Bullets fired: ${value}`}},
+    
+    'getBulletsKilled': { get: function() { return this.bulletsKilled; }},
+    'setBulletsKilled': { set: function(value) { this.bulletsKilled = value; elemBulletsKilled.innerHTML = `Bullets vanished: ${value}`}}
+});
+
+/* --------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Default Player configurations *//* ----------------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------- */
 function DefaultPlayerPosition(configuredElemPlayer){
+
+    let diameter;
+    if (window.getComputedStyle(elemGameContainer, null).getPropertyValue("background-color") === 'rgb(15, 86, 167)'){
+        diameter = 20;
+        mobileFlag = true;
+    }
+    
+    else{
+        diameter = 40;
+        mobileFlag = false;
+    }
+
     playerStyle = configuredElemPlayer.style;
     elemPlayer = configuredElemPlayer;
 
     // Styling the player's skin
-    let diameter = 20;
+    
     playerStyle.width = `${diameter}px`;
     playerStyle.height = `${diameter}px`;
 
@@ -72,50 +164,19 @@ ConfigureContainerDimensions();
 function ConfigureContainerDimensions(){
     let previousWidth = getGameContainerWidth();
     let previousHeight = getGameContainerHeight();
-    /*let previousHtmlWidth = $("html").width();
-    let previousHtmlHeight = $("html").height();
-    let previousBodyWidth = $("body").width();
-    let previousBodyHeight = $("body").height();*/
-
+    
     elemGameContainer.style.width = Math.round((previousWidth/getPlayerWidth()))*getPlayerWidth()-getPlayerWidth() + "px";
     elemGameContainer.style.height = Math.round((previousHeight/getPlayerHeight()))*getPlayerHeight()-getPlayerHeight() + "px";
-    
-    /*let experimentalHtmlWidth = Math.round((previousHtmlWidth/getPlayerWidth()))*getPlayerWidth()-getPlayerWidth();
-    let experimentalHtmlHeight = Math.round((previousHtmlHeight/getPlayerHeight()))*getPlayerHeight()-getPlayerWidth();
-    $("html").width(experimentalHtmlWidth);
-    $("html").height(experimentalHtmlHeight);
-    console.log(`Actual: ${$("html").width()} en ${$("html").height()}`);
-    console.log(`Calculated: ${experimentalHtmlWidth} en ${experimentalHtmlHeight}`);*/
-
-    /*let experimentalBodyWidth = Math.round((previousBodyWidth/getPlayerWidth()))*getPlayerWidth()-getPlayerWidth();
-    let experimentalBodyHeight = Math.round((previousBodyHeight/getPlayerHeight()))*getPlayerHeight()-getPlayerHeight();
-    $("body").width(experimentalBodyWidth);
-    $("body").height(experimentalBodyHeight);
-    console.log(`Actual: ${$("body").width()} en ${$("body").height()}`);
-    console.log(`Calculated: ${experimentalBodyWidth} en ${experimentalBodyHeight}`);*/
 }
 
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
-///* ------------------------------------ *//* SECTION HANDLING KEYS *//* ------------------------------------ *///
+///* ------------------------------------ *//* SECTION INTIALISING MOVEMENT *//* ------------------------------------ *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 
 /* --------------------------------------------------------------------------------------------------------- */
-/* ----------------------------------- *//* Global-/Helperfunctions *//* ----------------------------------- */
-/* --------------------------------------------------------------------------------------------------------- */
-
-// Converts a position-property(pixel) to a workable integer.
-function ConvertPropertyToInt(propertyValue){
-    return parseInt(propertyValue.replace('px', ''), 10);
-}
-
-function ConvertIntToPixelProperty(propertyValue){
-    return `${propertyValue}px`;
-}
-
-/* --------------------------------------------------------------------------------------------------------- */
-/* --------------------------------------- *//* Move-Controller *//* --------------------------------------- */
+/* --------------------------------------- *//* MoveController *//* --------------------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------- */
 
 // moveSpeed = pixels per move -- first-/secondMoveFlag = booleans signaling if player moves or not.
@@ -139,14 +200,14 @@ Object.defineProperties(playerController, {
 });
 
 /* ------------------------------------------------------------------------------------------------------------------------ */
-/* ----------------------------------- *//* EventListening to keypresses-/releases *//* ----------------------------------- */
+/* ----------------------------------- *//* EventListening to keypresses-/releases *//* ----------------------------------- */ Overview
 /* ------------------------------------------------------------------------------------------------------------------------ */
 
 // Tying up the keyup and keydown event to my own handler for both events.
 onkeyup = onkeydown = HandleKeyEvent;
 
 /* --------------------------------------------------------------------------------------------------------- */
-/* ----------------------------------- *//* Eventhandling Variables *//* ----------------------------------- */
+/* ----------------------------------- *//* Eventhandling Variables *//* ----------------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------- */
 
 // A memory of used arrow-keycodes to react upon within this program (arrowKeys) and a map of each entered keycode + current state (keycodeMap).
@@ -157,7 +218,7 @@ let keycodeMap = {};
 let isKeyUpEvent = false;
 
 /* ---------------------------------------------------------------------------------------------- */
-/* ----------------------------------- *//* Eventhandler *//* ----------------------------------- */
+/* ----------------------------------- *//* Eventhandler *//* ----------------------------------- */ Overview
 /* ---------------------------------------------------------------------------------------------- */
 let canShootFlag = true;
 function HandleKeyEvent(e) 
@@ -209,25 +270,69 @@ function HandleKeyEvent(e)
 }
 
 /* ---------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Configuring the move-controller *//* -------------------------- */
+/* ------------------------- *//* Configuring the move-controller *//* -------------------------- */ Overview
 /* ---------------------------------------------------------------------------------------------- */
+//let newDirectionIsHorizontal = false;
 // For smooth axial movement and to gracefully feature long keypresses we will start/stop/manage two separate moving sequences per direction/combination.
 function ConfigureStartMoveController(direction)
 {
-    // If the pressed key/direction is already configured, do nothing. (Efficiency)
-    if (playerController.getFirstMoveDirection != direction && playerController.getSecondMoveDirection != direction)
-    {
-        // If no first direction is present in the controller, insert this direction/keypress as the first direction. (And start the first moving sequence)
-        if (playerController.getFirstMoveDirection == '')
+    // Figuring out what's incoming
+    let newHorizontalDirection = '', newVerticalDirection = '';
+    let newDirectionIsHorizontal = true;
+    if (direction == 'up' || direction == 'down'){
+        newDirectionIsHorizontal = false;
+        newVerticalDirection = direction;
+    }
+    else{
+        newHorizontalDirection = direction;
+    }
+
+    // Figuring out what's already configured
+    let previousFirstDirection = playerController.getFirstMoveDirection;
+    let previousSecondDirection = playerController.getSecondMoveDirection;
+
+    let previousHorizontalDirection = '';
+    if (previousFirstDirection == 'left' || previousFirstDirection == 'right'){
+        previousHorizontalDirection = previousFirstDirection;
+    }
+    if (previousSecondDirection == 'left' || previousSecondDirection == 'right'){
+        previousHorizontalDirection = previousSecondDirection;
+    }
+
+    let previousVerticalDirection = '';
+    if (previousFirstDirection == 'up' || previousFirstDirection == 'down'){
+        previousVerticalDirection = previousFirstDirection;
+    }
+    if (previousSecondDirection == 'up' || previousSecondDirection == 'down'){
+        previousVerticalDirection = previousSecondDirection;
+    }
+
+    // Handling conflict between up & down and left & right
+    if (previousHorizontalDirection != newHorizontalDirection){
+        //ConfigureStopMoveController(previousHorizontalDirection);
+        ContinueConfiguration(newHorizontalDirection);
+    }
+    if (previousVerticalDirection != newVerticalDirection){
+        //ConfigureStopMoveController(previousVerticalDirection);
+        ContinueConfiguration(newVerticalDirection);
+    }
+
+    function ContinueConfiguration(direction){
+        // If the pressed key/direction is already configured, do nothing. (Efficiency)
+        if (playerController.getFirstMoveDirection != direction && playerController.getSecondMoveDirection != direction)
         {
-            playerController.setFirstMoveFlag = true;
-            playerController.setFirstMoveDirection = direction;
-        }
-        // If a first direction is present in the controller, insert this direction/keypress as the second direction. (And start the second moving sequence)
-        else
-        {
-            playerController.setSecondMoveFlag = true;
-            playerController.setSecondMoveDirection = direction;
+            // If no first direction is present in the controller, insert this direction/keypress as the first direction. (And start the first moving sequence)
+            if (playerController.getFirstMoveDirection == '')
+            {
+                playerController.setFirstMoveFlag = true;
+                playerController.setFirstMoveDirection = direction;
+            }
+            // If a first direction is present in the controller, insert this direction/keypress as the second direction. (And start the second moving sequence)
+            else
+            {
+                playerController.setSecondMoveFlag = true;
+                playerController.setSecondMoveDirection = direction;
+            }
         }
     }
 }
@@ -248,6 +353,80 @@ function ConfigureStopMoveController(direction)
     }
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------- *//* JOYSTICK *//* -------------------------- */ Overview
+/* ---------------------------------------------------------------------------------------------- */
+let joystickDisplayedFlag = false;
+let joystickInterval;
+CreateJoystick();
+function CreateJoystick(){
+    // Creating the joystick (API) object + configuration using parameters
+    let  joystick = new VirtualJoystick({
+        container: document.getElementById('stickContainer'),
+        mouseSupport: false,
+        stationaryBase: true,
+            baseX: getGameContainerWidth()-126/2-40,
+            baseY: getGameContainerHeight()-126/2-40,
+        limitStickTravel: true,
+            stickRadius: 80
+     });
+
+     let verticalDirection = '', horizontalDirection = '';
+
+     // Feeds input data to moving controller (and process) by substituting keypress-events using an interval.
+    function TranslateStickToMoving() {
+        // Abstraction of main the operations
+        function AddDirection(value){
+            if (value === 'up' || value === 'down'){
+                if (verticalDirection != value){
+                    verticalDirection = value;
+                    ConfigureStartMoveController(verticalDirection);
+                }
+            }
+            if (value === 'left' || value === 'right'){
+                if (horizontalDirection != value){
+                    horizontalDirection = value;
+                    ConfigureStartMoveController(horizontalDirection);
+                }
+            }
+        }
+        function RemoveDirection(value){
+            if (verticalDirection === value){
+                ConfigureStopMoveController(verticalDirection);
+                verticalDirection = '';
+            }
+            if (horizontalDirection === value){
+                ConfigureStopMoveController(horizontalDirection);
+                horizontalDirection = '';
+            }
+        }
+        function HandleJoystick(stickIsUp, stickDirection){
+            if (stickIsUp)
+                AddDirection(stickDirection);
+            else
+                RemoveDirection(stickDirection);
+        }
+
+        // Checking the joystick values
+        HandleJoystick(joystick.up(), 'up');
+        HandleJoystick(joystick.down(), 'down');
+        HandleJoystick(joystick.left(), 'left');
+        HandleJoystick(joystick.right(), 'right');
+
+        if (!joystickDisplayedFlag)
+            clearInterval(joystickInterval);
+    }
+
+    // Touch Eventlisteners to limit the use of an interval (rather than running it continuously).
+    joystick.addEventListener('touchStart', function(){
+        joystickDisplayedFlag = true;
+        joystickInterval = setInterval(TranslateStickToMoving, 20);
+    })
+    joystick.addEventListener('touchEnd', function(){
+        joystickDisplayedFlag = false;
+    })
+}
+
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* ---------------------------------- *//* SECTION SEQUENCING MOVEMENT *//* -------------------------------- *///
@@ -255,7 +434,7 @@ function ConfigureStopMoveController(direction)
 ///* --------------------------------------------------------------------------------------------------------- *///
 
 /* --------------------------------------------------------------------------------------------------------------------- */
-/* ----------------------------------- *//* Managing the sequencing of Movement *//* ----------------------------------- */
+/* ----------------------------------- *//* Managing the sequencing of Movement *//* ----------------------------------- */ Overview
 /* --------------------------------------------------------------------------------------------------------------------- */
 
 // Variables to signal a sequence of moves (because of keeping a key pressed) to stop.
@@ -319,11 +498,9 @@ function ExecuteMoveAnimationFrame(moveDirection) {
     });
 }
 
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* ---------------------------- *//* SECTION EXECUTING THE ACTUAL MOVEMENT *//* ---------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
+/* --------------------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------- *//* Executing the actual movement *//* ----------------------------------- */ Overview
+/* --------------------------------------------------------------------------------------------------------------------- */
 
 // Responsability: Checking and handling game-border collision and physically moving the player.
 function ExecuteMovingProcess(moveDirection){
@@ -391,12 +568,12 @@ function MovePlayerPosition(moveDirection)
 
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
-///* ---------------------------- *//* DYING - LIVING *//* ---------------------------- *///
+///* ---------------------------- *//* PLAYER LIFECYCLE *//* ---------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 
 /* ---------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Appearance Handling *//* -------------------------- */
+/* ------------------------- *//* Killing and spawning a player *//* -------------------------- */ Overview
 /* ---------------------------------------------------------------------------------------------- */
 
 function RespawnPlayer() {
@@ -413,156 +590,159 @@ function RespawnPlayer() {
 function KillPlayer() {
     playerStyle.backgroundSize = '0px';
     playerStyle.backgroundPosition = `${23/2}px`;
-    setTimeout(function(){ $(`#${elemPlayer.id}`).remove(); console.log('killed'); RespawnPlayer();}, 1200);
-    
+    setTimeout(function(){ $(`#${elemPlayer.id}`).remove(); gameController.setplayerDeaths = gameController.getplayerDeaths + 1; RespawnPlayer();}, 1200);
 }
 
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* ---------------------------- *//* ENEMY AI *//* ---------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
 
 /* ---------------------------------------------------------------------------------------------- */
-/* ------------------------- *//* Enemy AI *//* -------------------------- */
+/* ------------------------- *//* Opponents *//* -------------------------- */ Overview
 /* ---------------------------------------------------------------------------------------------- */
-// A controller for opponent movement configuration and management
-let opponentController = { MoveSpeed: 0, Left: 0, Top: 0, Right:0, Bottom: 0, Height: 0, Width: 0, HorizontalDirection: '', VerticalDirection: ''};
 
-// Attachement of getter and setter properties which will trigger or fire other events/methods.
-Object.defineProperties(opponentController, {
-    'getMoveSpeed': { get: function() { return this.MoveSpeed; }},
-    'setMoveSpeed': { set: function(value) { this.MoveSpeed = value; }},
-    
-    'getLeft': { get: function() { return this.Left; }},
-    'setLeft': { set: function(value) { this.Left = value; this.Right = this.Left + this.Width;}},
-    'getTop': { get: function() { return this.Top; }},
-    'setTop': { set: function(value) { this.Top = value; this.Bottom = this.Top + this.Height; }},
-    'getRight': { get: function() { return this.Right; }},
-    'setRight': { set: function(value) { this.Right = value; }},
-    'getBottom': { get: function() { return this.Bottom; }},
-    'setBottom': { set: function(value) { this.Bottom = value; }},
-    
-    'getWidth': { get: function() { return this.Width; }},
-    'setWidth': { set: function(value) { this.Width = value; }},
-    'getHeight': { get: function() { return this.Height; }},
-    'setHeight': { set: function(value) { this.Height = value; }},
+function CreateOpponentController(){
+    // A controller for opponent movement configuration and management
+    let opponentController = { MoveSpeed: 0, Left: 0, Top: 0, Right:0, Bottom: 0, Height: 0, Width: 0, HorizontalDirection: '', VerticalDirection: ''};
 
-    'getHorizontalDirection': { get: function() { return this.HorizontalDirection; }},
-    'setHorizontalDirection': { set: function(value) { this.HorizontalDirection = value; }},
-    
-    'getVerticalDirection': { get: function() { return this.VerticalDirection; }},
-    'setVerticalDirection': { set: function(value) { this.VerticalDirection = value; }},
-});
+    // Attachement of getter and setter properties which will trigger or fire other events/methods.
+    Object.defineProperties(opponentController, {
+        'getMoveSpeed': { get: function() { return this.MoveSpeed; }},
+        'setMoveSpeed': { set: function(value) { this.MoveSpeed = value; }},
+        
+        'getLeft': { get: function() { return this.Left; }},
+        'setLeft': { set: function(value) { this.Left = value; this.Right = this.Left + this.Width;}},
+        'getTop': { get: function() { return this.Top; }},
+        'setTop': { set: function(value) { this.Top = value; this.Bottom = this.Top + this.Height; }},
+        'getRight': { get: function() { return this.Right; }},
+        'setRight': { set: function(value) { this.Right = value; }},
+        'getBottom': { get: function() { return this.Bottom; }},
+        'setBottom': { set: function(value) { this.Bottom = value; }},
+        
+        'getWidth': { get: function() { return this.Width; }},
+        'setWidth': { set: function(value) { this.Width = value; }},
+        'getHeight': { get: function() { return this.Height; }},
+        'setHeight': { set: function(value) { this.Height = value; }},
+
+        'getHorizontalDirection': { get: function() { return this.HorizontalDirection; }},
+        'setHorizontalDirection': { set: function(value) { this.HorizontalDirection = value; }},
+        
+        'getVerticalDirection': { get: function() { return this.VerticalDirection; }},
+        'setVerticalDirection': { set: function(value) { this.VerticalDirection = value; }},
+    });
+
+    return opponentController;
+}
 
 let IDCounter = 0;
 let opponentList = []; let opponentsDied = 0;
 let opponentDiedFlag = [];
-//CreateOpponent();
+
 function CreateOpponent(){
+    let thisOpponentController = CreateOpponentController();
+
     // Creating the element, configuring Id and class and adding it to an array (+ updating the count for the next Id assignment).
     let elemOpponent = document.createElement("div");
     elemOpponent.classList.add('opponent');
     elemOpponent.id = `opponent${IDCounter}`;
-    
     IDCounter++;
 
     // Required for defining Right and Bottom using other property's setters.
-    let opponentHeigth = 20, opponentWidth = 20;
-    opponentController.setHeight = opponentHeigth;
-    opponentController.setWidth = opponentWidth;
+    thisOpponentController.setHeight = ConvertPropertyToInt(playerStyle.height);
+    thisOpponentController.setWidth = ConvertPropertyToInt(playerStyle.width);
 
     // Right and Bottom are defined by setters of Left and Top.
-    let spawnPointXY = [getGameContainerWidth()/2-(opponentController.getWidth/2),  opponentsDied % 2 == 0 ? 0 : getGameContainerHeight() - opponentController.getHeight];
-    opponentController.setLeft = spawnPointXY[0];
-    opponentController.setTop = spawnPointXY[1];
+    let spawnPointXY = [getGameContainerWidth()/2-(thisOpponentController.getWidth/2),  opponentsDied % 2 == 0 ? 0 : getGameContainerHeight() - thisOpponentController.getHeight];
+    thisOpponentController.setLeft = spawnPointXY[0];
+    thisOpponentController.setTop = spawnPointXY[1];
     
     // Styling the opponent element and applying alternating colors.
     elemOpponent.style.position = 'absolute';
-    elemOpponent.style.width = `${opponentController.Width}px`;
-    elemOpponent.style.height = `${opponentController.Height}px`;
+    elemOpponent.style.width = `${thisOpponentController.Width}px`;
+    elemOpponent.style.height = `${thisOpponentController.Height}px`;
     if (opponentsDied % 2 == 0) elemOpponent.style.background = "yellow";
     else elemOpponent.style.background = "red";
-    elemOpponent.style.left = `${opponentController.Left}px`;
-    elemOpponent.style.right = `${opponentController.Right}px`;
-    elemOpponent.style.top = `${opponentController.Top}px`;
-    elemOpponent.style.bottom = `${opponentController.Bottom}px`;
+    elemOpponent.style.left = `${thisOpponentController.Left}px`;
+    elemOpponent.style.right = `${thisOpponentController.Right}px`;
+    elemOpponent.style.top = `${thisOpponentController.Top}px`;
+    elemOpponent.style.bottom = `${thisOpponentController.Bottom}px`;
 
     // Adding the element to the playing field.
     document.getElementById("gameContainer").appendChild(elemOpponent);
     opponentList.push(elemOpponent);
     
     // Configuring the alternating moving directions
-    let horizontalDirection = opponentsDied % 2 == 0 ? 'left' : 'right';
-    let verticalDirection = opponentsDied % 2 == 0 ? 'up' : 'down';
-    opponentController.setHorizontalDirection = horizontalDirection;
-    opponentController.setVerticalDirection = verticalDirection;
+    let horizontalDirection = IDCounter % 2 == 0 ? 'left' : 'right';
+    let verticalDirection = IDCounter % 2 == 0 ? 'up' : 'down';
+    thisOpponentController.setHorizontalDirection = horizontalDirection;
+    thisOpponentController.setVerticalDirection = verticalDirection;
 
-    AnimateOpponent(elemOpponent);
+    AnimateOpponent(elemOpponent, thisOpponentController);
 }
 
-function AnimateOpponent(elemOpponent) {
-    let counter = 0; let opponentID = elemOpponent.id;
-    let randomXMoveFactor = 1, randomYMoveFactor = 1;    
-    let opponentDied;
+function AnimateOpponent(elemOpponent, thisOpponentController) {
+    let opponentID = elemOpponent.id;
+    let randomXMoveFactor = 1, randomYMoveFactor = 1;
 
+    let topRule, bottomRule, leftEdgeRule, rightEdgeRule;
+    let topPlayerCollision, bottomPlayerCollision, leftPlayerCollision, rightPlayerCollision;
     // An interval to animate opponent movement/collision until collision with the PLAYER occurs.
     let interval = setInterval(function() {
-        let elemOpponent = document.getElementById(opponentID);
-        counter++;
-        
-        // Creating MOVING collision rules.
-        let topRule = opponentController.getTop < 0;
-        let bottomRule = opponentController.getBottom > getGameContainerHeight();
-        let leftEdgeRule = opponentController.getLeft < 0;
-        let rightEdgeRule = opponentController.getRight > getGameContainerWidth();
-
-        // Applying MOVING collision rules.
-        if (topRule)
-            opponentController.setVerticalDirection = 'down';
-        if (bottomRule)
-            opponentController.setVerticalDirection = 'up';
-        if (leftEdgeRule)
-            opponentController.setHorizontalDirection = 'right';
-        if (rightEdgeRule)
-            opponentController.setHorizontalDirection = 'left';
-        
-        if (topRule || bottomRule || leftEdgeRule || rightEdgeRule){
-            randomXMoveFactor = Math.floor(Math.random() * 3);
-            randomYMoveFactor = Math.floor(Math.random() * 3);
+        // Stopping the movement sequence for a non-existing element
+        if (opponentDiedFlag.includes(elemOpponent)){
+            opponentDiedFlag.splice(opponentDiedFlag.indexOf(elemOpponent), opponentDiedFlag.indexOf(elemOpponent)+1);
+            clearInterval(interval);
         }
+
+        // Creating MOVING collision rules.
+        topRule = thisOpponentController.getTop < 0;
+        bottomRule = thisOpponentController.getBottom > getGameContainerHeight();
+        leftEdgeRule = thisOpponentController.getLeft < 0;
+        rightEdgeRule = thisOpponentController.getRight > getGameContainerWidth();
 
         // Creating PLAYER collision rules.
-        let topPlayerCollisision = opponentController.getBottom > ConvertPropertyToInt(elemPlayer.style.top) + ConvertPropertyToInt(elemPlayer.style.top)/100*2;
-        let bottomPlayerCollisision = opponentController.getTop < ConvertPropertyToInt(elemPlayer.style.bottom) - ConvertPropertyToInt(elemPlayer.style.bottom)/100*2;
-        let leftPlayerCollisision = opponentController.getRight > ConvertPropertyToInt(elemPlayer.style.left) + ConvertPropertyToInt(elemPlayer.style.left)/100*2;
-        let rightPlayerCollisision = opponentController.getLeft < ConvertPropertyToInt(elemPlayer.style.right) - ConvertPropertyToInt(elemPlayer.style.right)/100*2; 
+        let collisionMargin = 100*2; // A cut to the collsion area due to the round visual vs square hitbox
+        topPlayerCollision = thisOpponentController.getBottom > ConvertPropertyToInt(playerStyle.top) + ConvertPropertyToInt(playerStyle.top)/collisionMargin;
+        bottomPlayerCollision = thisOpponentController.getTop < ConvertPropertyToInt(playerStyle.bottom) - ConvertPropertyToInt(playerStyle.bottom)/collisionMargin;
+        leftPlayerCollision = thisOpponentController.getRight > ConvertPropertyToInt(playerStyle.left) + ConvertPropertyToInt(playerStyle.left)/collisionMargin;
+        rightPlayerCollision = thisOpponentController.getLeft < ConvertPropertyToInt(playerStyle.right) - ConvertPropertyToInt(playerStyle.right)/collisionMargin; 
 
-        // Applying PLAYER collision rules.
-        if (topPlayerCollisision && bottomPlayerCollisision && leftPlayerCollisision && rightPlayerCollisision){
-            clearInterval(interval); counter = 0; KillOpponent(elemOpponent);
+        // Applying WALL CONTACT collision rules.
+        if (topRule)
+            thisOpponentController.setVerticalDirection = 'down';
+        if (bottomRule)
+            thisOpponentController.setVerticalDirection = 'up';
+        if (leftEdgeRule)
+            thisOpponentController.setHorizontalDirection = 'right';
+        if (rightEdgeRule)
+            thisOpponentController.setHorizontalDirection = 'left';
+        
+        let maxAcceleration = 3;
+        if (topRule || bottomRule || leftEdgeRule || rightEdgeRule){
+            randomXMoveFactor = Math.floor(Math.random() * maxAcceleration);
+            randomYMoveFactor = Math.floor(Math.random() * maxAcceleration);
         }
 
-        if (opponentDiedFlag.includes(elemOpponent)){
-            clearInterval(interval);
-            opponentDiedFlag.splice(opponentDiedFlag.indexOf(elemOpponent), opponentDiedFlag.indexOf(elemOpponent)+1);
-        } 
+        // Applying PLAYER CONTACT collision rules.
+        if (topPlayerCollision && bottomPlayerCollision && leftPlayerCollision && rightPlayerCollision){
+            KillOpponent(elemOpponent); KillPlayer(); clearInterval(interval);
+        }
         
         // Updating the opponent-controller.
-        if (opponentController.getVerticalDirection === 'up')
-            opponentController.setTop = opponentController.getTop - (randomYMoveFactor + opponentController.getMoveSpeed);
-        if (opponentController.getVerticalDirection === 'down')
-            opponentController.setTop = opponentController.getTop + (randomYMoveFactor + opponentController.getMoveSpeed);
-        if (opponentController.getHorizontalDirection === 'left')
-            opponentController.setLeft = opponentController.getLeft - (randomYMoveFactor + opponentController.getMoveSpeed);
-        if (opponentController.getHorizontalDirection === 'right')
-            opponentController.setLeft = opponentController.getLeft + (randomYMoveFactor + opponentController.getMoveSpeed);
+        let horizontalDirection = thisOpponentController.getHorizontalDirection;
+        let verticalDirection = thisOpponentController.getVerticalDirection;
+        let randomisedXMoveSpeed = randomXMoveFactor + thisOpponentController.getMoveSpeed;
+        let randomisedYMoveSpeed = randomYMoveFactor + thisOpponentController.getMoveSpeed;
+        if (verticalDirection === 'up')
+            thisOpponentController.setTop = thisOpponentController.getTop - randomisedYMoveSpeed;
+        if (verticalDirection === 'down')
+            thisOpponentController.setTop = thisOpponentController.getTop + randomisedYMoveSpeed;
+        if (horizontalDirection === 'left')
+            thisOpponentController.setLeft = thisOpponentController.getLeft - randomisedXMoveSpeed;
+        if (horizontalDirection === 'right')
+            thisOpponentController.setLeft = thisOpponentController.getLeft + randomisedXMoveSpeed;
 
-        // Moving the opponent.
-        elemOpponent.style.left = `${opponentController.getLeft}px`;
-        elemOpponent.style.right = `${opponentController.getRight}px`;
-        elemOpponent.style.top = `${opponentController.getTop}px`;
-        elemOpponent.style.bottom = `${opponentController.getBottom}px`;
+        elemOpponent.style.left = `${thisOpponentController.getLeft}px`;
+        elemOpponent.style.right = `${thisOpponentController.getRight}px`;
+        elemOpponent.style.top = `${thisOpponentController.getTop}px`;
+        elemOpponent.style.bottom = `${thisOpponentController.getBottom}px`;
 
     }, 20);
 }
@@ -578,14 +758,12 @@ function KillOpponent(elemOpponent){
     elemOpponent.style.width = '0px'; elemOpponent.style.height = '0px';
     
     // Removing the element using JQuery after the death-transition has ended.
-    setTimeout(function(){ $(`#${elemOpponent.id}`).remove();}, 1200);
+    setTimeout(function(){ $(`#${elemOpponent.id}`).remove(); gameController.setOpponentsKilled = gameController.getOpponentsKilled +1;}, 1200);
 }
 
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* ---------------------------- *//* BULLET *//* ---------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
+/* ---------------------------------------------------------------------------------------------- */
+/* ------------------------- *//* Bullets *//* -------------------------- */ Overview
+/* ---------------------------------------------------------------------------------------------- */
 
 let bulletIDCounter = 0;
 let bulletList = [];
@@ -596,14 +774,14 @@ function CreateBullet(){
     elemBullet.id = `bullet${bulletIDCounter}`;
     
     let bulletStyle = elemBullet.style;
-    let bulletHeigth = 5, bulletWidth = 5;
+    let bulletHeigth = ConvertPropertyToInt(playerStyle.height)/4, bulletWidth = ConvertPropertyToInt(playerStyle.width)/4;
 
     let spawnPointXY = [];
     let spawnpointX, spawnpointY;
-    let bulletDirectionX, bulletDirectionY;
+    let bulletDirectionX = '', bulletDirectionY = '';
 
-    SwitchOnDirection(playerController.firstDirection);
-    SwitchOnDirection(playerController.secondDirection);
+    SwitchOnDirection(playerController.getFirstMoveDirection);
+    SwitchOnDirection(playerController.getSecondMoveDirection);
     function SwitchOnDirection(switchValue){
         switch(switchValue){
             case 'up':
@@ -622,12 +800,15 @@ function CreateBullet(){
                     spawnpointX = ConvertPropertyToInt(playerStyle.right);
                     bulletDirectionX = switchValue;
                     break;
-            default:
-                spawnpointX = ConvertPropertyToInt(playerStyle.right);
-                spawnpointY = ConvertPropertyToInt(playerStyle.top)+ConvertPropertyToInt(playerStyle.height)/2;
-                bulletDirectionX = 'right';
-                break;
         }
+    }
+
+    if (bulletDirectionX === ''){
+        spawnpointX = ConvertPropertyToInt(playerStyle.right);
+        if (bulletDirectionY == '') bulletDirectionX = 'right';
+    }
+    if (bulletDirectionY === ''){
+        spawnpointY = ConvertPropertyToInt(playerStyle.top)+ConvertPropertyToInt(playerStyle.height)/2;
     }
 
     spawnPointXY[0] = spawnpointX + 2.5;
@@ -657,10 +838,10 @@ function AnimateBullet(elemBullet, horizontalDirection, verticalDirection) {
     let collisionCounter = 0; let maxCollisions = 10;
     let shrinkFactor = (ConvertPropertyToInt(bulletStyle.width)/maxCollisions + ConvertPropertyToInt(bulletStyle.height)/maxCollisions)/2;
 
+    gameController.setBulletsFired = gameController.getBulletsFired +1;
     bulletStyle.background = 'green';
     setTimeout(function(){ elemBullet.style.background = 'red';}, 1000);
 
-    CreateOpponent();
     // An interval to animate opponent movement/collision until collision with the PLAYER occurs.
     let interval = setInterval(function() {
         let bulletTop = ConvertPropertyToInt(bulletStyle.top), bulletBottom = ConvertPropertyToInt(bulletStyle.bottom);
@@ -685,28 +866,38 @@ function AnimateBullet(elemBullet, horizontalDirection, verticalDirection) {
             
         if (topRule || bottomRule || leftEdgeRule || rightEdgeRule){
             collisionCounter++; 
-            if (collisionCounter == maxCollisions) KillBullet(elemBullet);
+            if (collisionCounter == maxCollisions) {KillBullet(elemBullet); gameController.setBulletsKilled = gameController.getBulletsKilled +1;}
             if (collisionCounter % 2 == 0) {
                 bulletStyle.width = ConvertIntToPixelProperty(bulletWidth-shrinkFactor); 
                 bulletStyle.height = ConvertIntToPixelProperty(bulletHeight-shrinkFactor);
             }
         }        
 
-        function CheckCollision(item){
+        function CheckOpponentCollision(item){
             let itemStyle = item.style;
             // Creating OPPONENT collision rules.
-            let topOpponentCollision = bulletBottom > ConvertPropertyToInt(itemStyle.top) + ConvertPropertyToInt(itemStyle.top)/100*2;
-            let bottomOpponentCollision = bulletTop < ConvertPropertyToInt(itemStyle.bottom) - ConvertPropertyToInt(itemStyle.bottom)/100*2;
-            let leftOpponentCollision = bulletRight > ConvertPropertyToInt(itemStyle.left) + ConvertPropertyToInt(itemStyle.left)/100*2;
-            let rightOpponentCollision = bulletLeft < ConvertPropertyToInt(itemStyle.right) - ConvertPropertyToInt(itemStyle.right)/100*2;
+            let topOpponentCollision, bottomOpponentCollision, leftOpponentCollision, rightOpponentCollision;
+            if (mobileFlag){
+                topOpponentCollision = bulletBottom > ConvertPropertyToInt(itemStyle.top);
+                bottomOpponentCollision = bulletTop < ConvertPropertyToInt(itemStyle.bottom);
+                leftOpponentCollision = bulletRight > ConvertPropertyToInt(itemStyle.left);
+                rightOpponentCollision = bulletLeft < ConvertPropertyToInt(itemStyle.right);
+            }
+
+            else{
+                topOpponentCollision = bulletBottom > ConvertPropertyToInt(itemStyle.top) + ConvertPropertyToInt(itemStyle.top)/100*2;
+                bottomOpponentCollision = bulletTop < ConvertPropertyToInt(itemStyle.bottom) - ConvertPropertyToInt(itemStyle.bottom)/100*2
+                leftOpponentCollision = bulletRight > ConvertPropertyToInt(itemStyle.left) + ConvertPropertyToInt(itemStyle.left)/100*2;
+                rightOpponentCollision = bulletLeft < ConvertPropertyToInt(itemStyle.right) - ConvertPropertyToInt(itemStyle.right)/100*2;
+            }
+            
 
             // Applying OPPONENT collision rules.
-            if (topOpponentCollision && bottomOpponentCollision && leftOpponentCollision && rightOpponentCollision && bulletStyle.background === 'red'){
-                clearInterval(interval); KillOpponent(item); KillBullet(elemBullet);
-                console.log('OPPONENT CRASHED BULLET');
+            if (topOpponentCollision && bottomOpponentCollision && leftOpponentCollision && rightOpponentCollision){
+                KillOpponent(item); KillBullet(elemBullet); clearInterval(interval); console.log('HIT');
             }
         }
-        opponentList.forEach(CheckCollision);
+        opponentList.forEach(CheckOpponentCollision);
 
         // Creating PLAYER collision rules.
         let topPlayerCollision = bulletBottom > ConvertPropertyToInt(playerStyle.top) + ConvertPropertyToInt(playerStyle.top)/100*2;
@@ -716,23 +907,25 @@ function AnimateBullet(elemBullet, horizontalDirection, verticalDirection) {
 
         // Applying PLAYER collision rules.
         if (topPlayerCollision && bottomPlayerCollision && leftPlayerCollision && rightPlayerCollision && bulletStyle.background === 'red'){
-            clearInterval(interval); KillPlayer(); KillBullet(elemBullet);
+            KillPlayer(); KillBullet(elemBullet); clearInterval(interval);
         }
 
+        let moveSpeed = ConvertPropertyToInt(playerStyle.width)/20*1.5;
+
         if (verticalDirection === 'up'){
-            bulletStyle.top = ConvertIntToPixelProperty(bulletTop - 1);
+            bulletStyle.top = ConvertIntToPixelProperty(bulletTop - moveSpeed);
             bulletStyle.bottom = ConvertIntToPixelProperty(bulletTop + bulletHeight);
         }
         if (verticalDirection === 'down'){
-            bulletStyle.top = ConvertIntToPixelProperty(bulletTop + 1);
+            bulletStyle.top = ConvertIntToPixelProperty(bulletTop + moveSpeed);
             bulletStyle.bottom = ConvertIntToPixelProperty(bulletTop + bulletHeight);
         }
         if (horizontalDirection === 'left'){
-            bulletStyle.left = ConvertIntToPixelProperty(bulletLeft - 1);
+            bulletStyle.left = ConvertIntToPixelProperty(bulletLeft - moveSpeed);
             bulletStyle.right = ConvertIntToPixelProperty(bulletLeft + bulletWidth);
         }
         if (horizontalDirection === 'right'){
-            bulletStyle.left = ConvertIntToPixelProperty(bulletLeft + 1);
+            bulletStyle.left = ConvertIntToPixelProperty(bulletLeft + moveSpeed);
             bulletStyle.right = ConvertIntToPixelProperty(bulletLeft + bulletWidth);
         }
 
@@ -753,76 +946,16 @@ function AnimateBullet(elemBullet, horizontalDirection, verticalDirection) {
         setTimeout(function(){ $(`#${bulletID}`).remove();}, 1200);
     }
 
-    ///* --------------------------------------------------------------------------------------------------------- *///
-///* --------------------------------------------------------------------------------------------------------- *///
-///* ---------------------------- *//* JOYSTICK *//* ---------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
 ///* --------------------------------------------------------------------------------------------------------- *///
-TestJoystick();
-function TestJoystick(){
-    let  joystick = new VirtualJoystick({
-        container: document.getElementById('stickContainer'),
-        mouseSupport: false,
-        stationaryBase: true,
-            baseX: getGameContainerWidth()-126/2-40,
-            baseY: getGameContainerHeight()-126/2-40,
-        limitStickTravel: true,
-            stickRadius: 80
-     });
-
-     let counter = 0;
-     let verticalDirection = '', horizontalDirection = '';
-
-     // Interval
-    function CheckStickPosition() {
-        // ---Functions
-        function FillInDirection(value){
-            if (value === 'up' || value === 'down'){
-                if (verticalDirection != value){
-                    verticalDirection = value;
-                    ConfigureStartMoveController(verticalDirection);
-                }
-            }
-            if (value === 'left' || value === 'right'){
-                if (horizontalDirection != value){
-                    horizontalDirection = value;
-                    ConfigureStartMoveController(horizontalDirection);
-                }
-            }
-        }
-        function RemoveDirection(value){
-            if (verticalDirection === value){
-                ConfigureStopMoveController(verticalDirection);
-                verticalDirection = '';
-            }
-            if (horizontalDirection === value){
-                ConfigureStopMoveController(horizontalDirection);
-                horizontalDirection = '';
-            }
-        }
-        function HandleDirection(stickFlag, direction){
-            if (stickFlag)
-                FillInDirection(direction);
-            else
-                RemoveDirection(direction);
-        }
-
-        // --- Handling
-        HandleDirection(joystick.up(), 'up');
-        HandleDirection(joystick.down(), 'down');
-        HandleDirection(joystick.left(), 'left');
-        HandleDirection(joystick.right(), 'right');
-        
-        /*if (counter < 5) counter++;
-        else clearInterval(interval)*/
-    }
-    let interval = setInterval(CheckStickPosition, 20);
-
-    // Eventlisteners
-    joystick.addEventListener('touchStart', function(){
-        console.log('down')
-    })
-    joystick.addEventListener('touchEnd', function(){
-        console.log('up')
-    })
+///* ---------------------------- *//* GAME FLOW *//* ---------------------------- */// 
+///* --------------------------------------------------------------------------------------------------------- *///
+///* --------------------------------------------------------------------------------------------------------- *///
+EnactGameFlow();
+function EnactGameFlow(){
+    setTimeout(CreateOpponent, 1000);
+    setTimeout(CreateOpponent, 3000);
+    setTimeout(CreateOpponent, 6000);
+    setTimeout(CreateOpponent, 7000);
+    setTimeout(CreateOpponent, 10000);
 }

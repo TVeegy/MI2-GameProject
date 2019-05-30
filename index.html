@@ -16,9 +16,15 @@
     
     <body>
         <div id="gameContainer">
+            <div id='gameInfo'>
+                <div class="gameInfoItem" id="playerDeaths">Player deaths</div>
+                <div class="gameInfoItem" id="opponentsKilled">Opponents killed:</div>
+                <div class="gameInfoItem" id="bulletsFired">Bullets fired:</div>
+                <div class="gameInfoItem" id="bulletsKilled">Bullets vanished:</div>
+            </div>
             <div id="player"></div>
-            <div id='stickContainer' class="stick">
-                <canvas class='stick' id='stickContainer' width="126" height="126" style="position: absolute; left: 239.807px; top: 203.667px; display: none;"></canvas>
+            <div id='stickContainer' class='stick'>
+                <canvas class='stick' width="126" height="126" style="position: absolute; left: 239.807px; top: 203.667px; display: none;"></canvas>
 			    <canvas class='stick' id='stick' width="86" height="86" style="position: absolute; left: 389.632px; top: 295.947px; display: none;"></canvas>
             </div>
         </div>
