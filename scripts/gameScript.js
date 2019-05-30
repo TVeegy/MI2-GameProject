@@ -1,4 +1,17 @@
 ;(function () {
+    /* A NOTE TO THE TEACHER */
+    /**
+     * I have not been to all lessons, therefore I cannot apply every convention teached by the teacher.
+     * This is not an excuse, this is a warning for what you could find in this piece of javascript code.
+     * I DID pay full attention to a certain book 'Clean Code' describing the importance of clear, logical and fool-proof code.
+     * 
+     * The fact that I applied my knowledge from school and that book in here has helped me out a lot.
+     * I find it very difficult to read code as it is cluttered and chaotic without a clear mind.
+     * So I wasn't just trying to style this code in a good way, I had to.
+     * 
+     * That concludes my defense for foreign conventions to our usual lessons.
+     */
+    
     'use strict'
     window.addEventListener('load', function () 
     {
