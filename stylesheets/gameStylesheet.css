@@ -20,6 +20,7 @@ html{
     
     position: absolute; /*relative*/
     box-sizing: border-box; /*Inclusief margins EN border*/
+    z-index: 0;
 }
 
 .playerTransition{
@@ -68,6 +69,42 @@ body{
 
 .stick{
     visibility: hidden;
+}
+
+#restartButton{
+    top: 20%;
+    left: 40%;
+    right: 60%;
+    width: 20%;
+    position: absolute;
+
+    padding: 5px;
+    background-color: rgb(18, 158, 72);
+    font-size: 15px;
+    color: rgb(192, 207, 57);
+    border: 3px solid black;
+    border-radius: 10px;
+}
+
+.buttonVisible{
+    visibility: visible;
+}
+.buttonHidden{
+    visibility: hidden;
+}
+
+.youDied{
+    background-image: url(/img/background/youDied.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+}
+
+.youWin{
+    background-image: url(/img/background/youWin.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 #gameInfo{
